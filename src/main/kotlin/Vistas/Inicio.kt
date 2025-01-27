@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun dashboardContent() {
+fun Inicio() {
     Column(
         modifier = Modifier
             .fillMaxSize()

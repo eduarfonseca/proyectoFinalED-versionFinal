@@ -63,7 +63,7 @@ fun dynamicTablero(
 }
 
 @Composable
-fun tableroScreen() {
+fun TableroScreen() {
     val filas = 10
     val columnas = 10
     val casillasActivas = listOf(

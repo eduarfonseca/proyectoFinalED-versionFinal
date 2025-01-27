@@ -1,14 +1,11 @@
 import Modelos.Tablero
+import Vistas.Componentes.TableroScreen
 import Vistas.Componentes.macOSTitleBar
 import Vistas.Componentes.sideBar
-import Vistas.Componentes.tableroScreen
-import Vistas.dashboardContent
+import Vistas.Inicio
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,15 +24,6 @@ import androidx.compose.ui.window.rememberWindowState
 @Composable
 @Preview
 fun App() {
-
-    val tablero = Tablero(10, 10)
-
-    // Inicializar el tablero con un 30% de casillas inactivas
-    tablero.inicializarCasillasInactivas(30)
-
-    // Mostrar el tablero en consola
-    tablero.mostrarTablero()
-
 
     var selectedItem by remember { mutableStateOf("Inicio") }
 
@@ -56,17 +44,8 @@ fun App() {
                     .padding(16.dp)
             ) {
                 when (selectedItem) {
-                    "Inicio" -> dashboardContent()
-                    "Tablero" -> tableroScreen()
-//                    "Médicos" -> DoctorListContent()
-//                    "Hospitales" -> HospitalListContent()
-//                    "Buscar" -> SearchScreen()
-//                    "Crear" -> CreateProfileForm()
-//                    "Turnos" -> TurnosTablePreview()
-//                    "Consultas" -> ConsultasTablePreview()
-//                    "Departamentos" -> DepartamentoTablePreview()
-//                    "Unidades" -> UnidadTablePreview()
-                    // Agrega más casos aquí para las nuevas secciones
+                    "Inicio" -> Inicio()
+                    "Tablero" -> TableroScreen()
                 }
             }
         }
