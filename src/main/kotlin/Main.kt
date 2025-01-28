@@ -4,7 +4,6 @@ import Vistas.Componentes.macOSTitleBar
 import Vistas.Componentes.sideBar
 import Vistas.InicioScreen
 import Vistas.TableroScreen
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
@@ -17,40 +16,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-
-@Composable
-@Preview
-fun App() {
-
-
-    var selectedItem by remember { mutableStateOf("Inicio") }
-
-    // Mostrar la estructura con la barra lateral y el contenido principal
-    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF121212))) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            // Sidebar
-            sideBar(
-                selectedItem = selectedItem,
-                onItemSelected = { selectedItem = it }
-            )
-
-            // Main Content
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF121212))
-                    .padding(16.dp)
-            ) {
-                when (selectedItem) {
-                    "Inicio" -> InicioScreen()
-                    "Tablero" -> TableroScreen()
-                }
-            }
-        }
-
-    }
-
-}
 
 fun main() = application {
     val windowState = rememberWindowState(

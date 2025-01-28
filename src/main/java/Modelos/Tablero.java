@@ -4,24 +4,26 @@ import Interfaces.GeneradorTablero;
 import Interfaces.GestionadorMeta;
 import Interfaces.GestionadorTablero;
 import kotlin.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Tablero implements GeneradorTablero, GestionadorMeta, GestionadorTablero {
+    private static Tablero instancia; // Instancia única de la clase
     private final boolean[][] tablero; // true: activa, false: inactiva
-    private final int filas;
-    private final int columnas;
+    private int filas;
+    private int columnas;
     private final Random random;
     private int[] meta; // Coordenadas de la meta [fila, columna]
 
-    public Tablero(int filas, int columnas, long seed) {
+    // Constructor privado
+    private Tablero(int filas, int columnas, long seed) {
         this.filas = filas;
         this.columnas = columnas;
         this.tablero = new boolean[filas][columnas];
         this.random = new Random(seed);
 
+        // Inicializa todas las casillas como activas
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 tablero[i][j] = true;
@@ -30,6 +32,22 @@ public class Tablero implements GeneradorTablero, GestionadorMeta, GestionadorTa
 
         inicializarMeta();
     }
+
+    public void setFilas(int filas) {
+        this.filas = filas;
+    }
+
+    public void setColumnas(int columnas) {
+        this.columnas = columnas;
+    }
+
+    public static Tablero getInstancia(int filas, int columnas, long seed) {
+        if (instancia == null) {
+            instancia = new Tablero(filas, columnas, seed);
+        }
+        return instancia;
+    }
+
 
     // Implementación de TableroGenerador
     @Override

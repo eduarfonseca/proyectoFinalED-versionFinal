@@ -5,5 +5,5 @@ import kotlin.Pair;
 import java.util.List;
 
 public interface GestionTrayectoria {
-    List<Pair<Integer, Integer>> obtenerTrayectoria(List<Paso> pasos);
+    List<Pair<Integer, Integer>> obtenerTrayectoria();
 }

@@ -9,20 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Robot implements MovimientoRobot, ValidacionRobot, GestionTrayectoria {
+    private static Robot instancia; // Instancia única de la clase
     private int filaActual;
     private int columnaActual;
     private final int pasosMaximos;
+    private List<Paso> pasos;
 
-    public Robot(int filaInicial, int columnaInicial, int pasosMaximos) {
+    private Robot(int filaInicial, int columnaInicial, int pasosMaximos) { // Constructor privado
         this.filaActual = filaInicial;
         this.columnaActual = columnaInicial;
         this.pasosMaximos = pasosMaximos;
+        this.pasos = new ArrayList<>();
+    }
+
+    // Método estático para obtener la instancia única
+    public static synchronized Robot getInstancia(int filaInicial, int columnaInicial, int pasosMaximos) {
+        if (instancia == null) {
+            instancia = new Robot(filaInicial, columnaInicial, pasosMaximos);
+        }
+        return instancia;
     }
 
     // Implementación de MovimientoRobot
     @Override
     public List<Paso> moverHaciaMeta(boolean[][] tablero, int metaFila, int metaColumna) {
-        List<Paso> pasos = new ArrayList<>();
         int pasosDados = 0;
 
         if (!tablero[filaActual][columnaActual]) {
@@ -103,7 +113,7 @@ public class Robot implements MovimientoRobot, ValidacionRobot, GestionTrayector
 
     // Implementación de GestionTrayectoria
     @Override
-    public List<Pair<Integer, Integer>> obtenerTrayectoria(List<Paso> pasos) {
+    public List<Pair<Integer, Integer>> obtenerTrayectoria() {
         List<Pair<Integer, Integer>> trayectoria = new ArrayList<>();
 
         for (Paso paso : pasos) {
@@ -115,6 +125,10 @@ public class Robot implements MovimientoRobot, ValidacionRobot, GestionTrayector
 
     public int getPasosMaximos() {
         return pasosMaximos;
+    }
+
+    public Pair<Integer,Integer> obtenerPasoActual() {
+        return new Pair<>(filaActual, columnaActual);
     }
 }
 
