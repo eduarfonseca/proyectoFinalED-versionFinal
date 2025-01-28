@@ -1,11 +1,12 @@
 package Vistas
 
-import Modelos.Paso
 import Modelos.Robot
 import Modelos.Tablero
 import Vistas.Componentes.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -22,8 +23,12 @@ import androidx.compose.ui.zIndex
 @Composable
 fun TableroScreen(robot: Robot, tablero: Tablero) {
 
-    var robotState by remember { mutableStateOf(robot) }
-    var tableroState by remember { mutableStateOf(tablero) }
+    var filas by remember{mutableStateOf(tablero.filas)}
+    var columnas by remember{mutableStateOf(tablero.columnas)}
+    var casillasActivas by remember{ mutableStateOf(tablero.obtenerCasillasActivas()) }
+    val posicionRobot by remember{ mutableStateOf(robot.obtenerPasoActual()) }
+    val meta by remember{mutableStateOf(tablero.obtenerMeta())}
+    val trayectoria by remember{ mutableStateOf(robot.obtenerTrayectoria()) }
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         item {
@@ -32,7 +37,8 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                 style = MaterialTheme.typography.overline,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp),
-                color = Color.White
+                color = Color.White,
+                fontSize = 18.sp
             )
             Row(
                 modifier = Modifier
@@ -61,14 +67,23 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                             maxValue = robot.pasosMaximos,
                             modifier = Modifier.fillMaxHeight(0.05f).width(200.dp)
                         )
+//                        Button(
+//                            onClick = { robotState. },
+//                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
+//                            modifier = Modifier.padding(top = 16.dp)
+//                        ) {
+//                            Text(
+//                                text = "Aplicar",
+//                                fontSize = 18.sp,
+//                                fontWeight = FontWeight.Medium,
+//                                color = Color.White
+//                            )
+//                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Box(modifier = Modifier.weight(1f)) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        var rows by remember { mutableStateOf(tablero.filas) }
-                        var columns by remember { mutableStateOf(tablero.columnas) }
-
                         Text(
                             text = "Tamaño de la matriz",
                             style = MaterialTheme.typography.overline,
@@ -76,6 +91,8 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                             color = Color.White,
                             fontSize = 14.sp,
                         )
+                        var rows by remember { mutableStateOf(filas) }
+                        var columns by remember { mutableStateOf(columnas) }
 
                         MatrixSizePicker(
                             rows = rows,
@@ -85,7 +102,13 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                         )
 
                         Button(
-                            onClick = { tablero.filas = rows; tablero.columnas = columns },
+                            onClick = {
+                                filas = rows
+                                columnas = columns
+                                tablero.filas = rows
+                                tablero.columnas = columns
+                                casillasActivas = tablero.obtenerCasillasActivas()
+                            },
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                             modifier = Modifier.padding(top = 16.dp)
                         ) {
@@ -111,6 +134,7 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                         )
                         // Estado para el valor seleccionado
                         var selectedNumber by remember { mutableStateOf(20) }
+
                         NumberPicker(
                             value = selectedNumber,
                             onValueChange = { selectedNumber = it },
@@ -120,7 +144,10 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                         )
 
                         Button(
-                            onClick = { tablero.inicializarCasillasInactivas(selectedNumber) },
+                            onClick = {
+                                tablero.inicializarCasillasInactivas(selectedNumber)
+                                casillasActivas = tablero.obtenerCasillasActivas()
+                            },
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                             modifier = Modifier.padding(top = 16.dp)
                         ) {
@@ -137,6 +164,7 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
 
                 }
             }
+
             Text(
                 text = "Matriz de tamaño: ${tablero.filas} x ${tablero.columnas}",
                 style = MaterialTheme.typography.overline,
@@ -145,7 +173,50 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                 fontSize = 14.sp,
             )
 
-            dynamicTablero(robotState, tableroState)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                repeat(filas) { fila ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        repeat(columnas) { columna ->
+                            val posicionActual = Pair(fila, columna)
+                            if (casillasActivas != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(2.dp)
+                                        .background(
+                                            when {
+                                                posicionActual == posicionRobot -> Color(154, 105, 214) // Posición del robot
+                                                posicionActual == meta -> Color(199, 78, 78) // Casilla meta
+                                                posicionActual in trayectoria -> Color(237, 195, 107) // Trayectoria
+                                                posicionActual in casillasActivas -> Color(88, 157, 93) // Casilla activa
+                                                else -> Color.Gray // Casilla inactiva
+                                            },
+                                            shape = RoundedCornerShape(4.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                )
+                                {
+                                    // Mostrar coordenadas solo como referencia
+                                    Text(
+                                        text = "${fila + 1},${columna + 1}",
+                                        fontSize = 10.sp,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
