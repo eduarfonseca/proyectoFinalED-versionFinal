@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun Inicio() {
+fun InicioScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()

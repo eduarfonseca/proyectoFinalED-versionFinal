@@ -1,113 +1,123 @@
 package Modelos;
 
+import Interfaces.GestionTrayectoria;
+import Interfaces.MovimientoRobot;
+import Interfaces.ValidacionRobot;
+import kotlin.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Robot {
+public class Robot implements MovimientoRobot, ValidacionRobot, GestionTrayectoria {
     private int filaActual;
     private int columnaActual;
+    private final int pasosMaximos;
 
-    public Robot(int filaInicial, int columnaInicial) {
+    public Robot(int filaInicial, int columnaInicial, int pasosMaximos) {
         this.filaActual = filaInicial;
         this.columnaActual = columnaInicial;
+        this.pasosMaximos = pasosMaximos;
     }
 
-    /**
-     * Mueve el robot hacia la meta utilizando el algoritmo escalador de colinas.
-     * Si el robot se mueve a una casilla inactiva, pierde.
-     *
-     * @param tablero     El tablero donde se mueve el robot.
-     * @param metaFila    Fila de la meta.
-     * @param metaColumna Columna de la meta.
-     * @return Lista de pasos dados en el formato (fila, columna).
-     */
-    public List<String> moverHaciaMeta(boolean[][] tablero, int metaFila, int metaColumna) {
-        List<String> pasos = new ArrayList<>();
-        pasos.add("Inicio: (" + filaActual + ", " + columnaActual + ")");
+    // Implementación de MovimientoRobot
+    @Override
+    public List<Paso> moverHaciaMeta(boolean[][] tablero, int metaFila, int metaColumna) {
+        List<Paso> pasos = new ArrayList<>();
+        int pasosDados = 0;
 
-        while (!(filaActual == metaFila && columnaActual == metaColumna)) {
-            int mejorFila = filaActual;
-            int mejorColumna = columnaActual;
+        if (!tablero[filaActual][columnaActual]) {
+            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "¡Perdió! Inicio en casilla inactiva."));
+            return pasos;
+        }
+
+        pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Inicio"));
+
+        while (!(filaActual == metaFila && columnaActual == metaColumna) && pasosDados < pasosMaximos) {
+            List<int[]> movimientosValidos = new ArrayList<>();
             int mejorDistancia = calcularDistanciaManhattan(filaActual, columnaActual, metaFila, metaColumna);
 
-            // Evaluar todos los posibles movimientos
             for (int[] movimiento : obtenerMovimientosPosibles()) {
                 int nuevaFila = filaActual + movimiento[0];
                 int nuevaColumna = columnaActual + movimiento[1];
 
-                // Verificar si el movimiento es válido
-                if (esMovimientoDentroDeLimites(tablero, nuevaFila, nuevaColumna)) {
+                if (esMovimientoValido(tablero, nuevaFila, nuevaColumna)) {
                     int nuevaDistancia = calcularDistanciaManhattan(nuevaFila, nuevaColumna, metaFila, metaColumna);
 
-                    // Actualizar si encontramos una casilla mejor
-                    if (nuevaDistancia < mejorDistancia) {
+                    if (nuevaDistancia <= mejorDistancia) {
                         mejorDistancia = nuevaDistancia;
-                        mejorFila = nuevaFila;
-                        mejorColumna = nuevaColumna;
+                        movimientosValidos.add(new int[]{nuevaFila, nuevaColumna});
                     }
                 }
             }
 
-            // Realizar el movimiento
-            filaActual = mejorFila;
-            columnaActual = mejorColumna;
+            pasosDados++;
 
-            // Verificar si el robot se movió a una casilla inactiva
+            if (movimientosValidos.isEmpty()) {
+                pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Paso perdido. No hay movimientos válidos."));
+                continue;
+            }
+
+            int[] mejorMovimiento = movimientosValidos.get(0);
+            filaActual = mejorMovimiento[0];
+            columnaActual = mejorMovimiento[1];
+
             if (!tablero[filaActual][columnaActual]) {
-                pasos.add("¡Perdió! El robot se movió a una casilla inactiva: (" + filaActual + ", " + columnaActual + ")");
+                pasos.add(new Paso(pasosDados, filaActual, columnaActual, "¡Perdió! Casilla inactiva."));
                 return pasos;
             }
 
-            pasos.add("Paso a: (" + filaActual + ", " + columnaActual + ")");
+            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Movimiento realizado."));
         }
 
-        // Verificar si alcanzó la meta
         if (filaActual == metaFila && columnaActual == metaColumna) {
-            pasos.add("Meta alcanzada en: (" + metaFila + ", " + metaColumna + ")");
+            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Meta alcanzada."));
         } else {
-            pasos.add("No se pudo llegar a la meta.");
+            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "No se pudo llegar a la meta. Pasos máximos alcanzados."));
         }
 
         return pasos;
     }
 
-    /**
-     * Obtiene los posibles movimientos del robot.
-     *
-     * @return Una lista de movimientos en el formato (deltaFila, deltaColumna).
-     */
-    private List<int[]> obtenerMovimientosPosibles() {
-        List<int[]> movimientos = new ArrayList<>();
-        movimientos.add(new int[] { -1, 0 }); // Arriba
-        movimientos.add(new int[] { 1, 0 });  // Abajo
-        movimientos.add(new int[] { 0, -1 }); // Izquierda
-        movimientos.add(new int[] { 0, 1 });  // Derecha
-        return movimientos;
+    @Override
+    public List<int[]> obtenerMovimientosPosibles() {
+        return List.of(
+                new int[]{-1, 0}, // Arriba
+                new int[]{1, 0},  // Abajo
+                new int[]{0, -1}, // Izquierda
+                new int[]{0, 1}   // Derecha
+        );
     }
 
-    /**
-     * Calcula la distancia Manhattan entre dos casillas.
-     *
-     * @param fila1    Fila de la primera casilla.
-     * @param columna1 Columna de la primera casilla.
-     * @param fila2    Fila de la segunda casilla.
-     * @param columna2 Columna de la segunda casilla.
-     * @return Distancia Manhattan entre las dos casillas.
-     */
-    private int calcularDistanciaManhattan(int fila1, int columna1, int fila2, int columna2) {
+    // Implementación de ValidacionRobot
+    @Override
+    public int calcularDistanciaManhattan(int fila1, int columna1, int fila2, int columna2) {
         return Math.abs(fila1 - fila2) + Math.abs(columna1 - columna2);
     }
 
-    /**
-     * Verifica si un movimiento está dentro de los límites del tablero.
-     *
-     * @param tablero    El tablero donde se mueve el robot.
-     * @param nuevaFila    Nueva fila a evaluar.
-     * @param nuevaColumna Nueva columna a evaluar.
-     * @return true si el movimiento está dentro de los límites, false en caso contrario.
-     */
-    private boolean esMovimientoDentroDeLimites(boolean[][] tablero, int nuevaFila, int nuevaColumna) {
+    @Override
+    public boolean esMovimientoValido(boolean[][] tablero, int nuevaFila, int nuevaColumna) {
         return nuevaFila >= 0 && nuevaFila < tablero.length &&
-                nuevaColumna >= 0 && nuevaColumna < tablero[0].length;
+                nuevaColumna >= 0 && nuevaColumna < tablero[0].length &&
+                tablero[nuevaFila][nuevaColumna];
+    }
+
+    // Implementación de GestionTrayectoria
+    @Override
+    public List<Pair<Integer, Integer>> obtenerTrayectoria(List<Paso> pasos) {
+        List<Pair<Integer, Integer>> trayectoria = new ArrayList<>();
+
+        for (Paso paso : pasos) {
+            trayectoria.add(new Pair<>(paso.getFila(), paso.getColumna()));
+        }
+
+        return trayectoria;
+    }
+
+    public int getPasosMaximos() {
+        return pasosMaximos;
     }
 }
+
+
+
+
