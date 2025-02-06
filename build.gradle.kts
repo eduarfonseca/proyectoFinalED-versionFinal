@@ -23,6 +23,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
     implementation(compose.material3)
+    implementation(files("libs/LinkedGraph_1.0.jar"))
 }
 
 compose.desktop {

@@ -3,7 +3,6 @@ import Modelos.Tablero
 import Vistas.Componentes.macOSTitleBar
 import Vistas.Componentes.sideBar
 import Vistas.InicioScreen
-import Vistas.TableroScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*

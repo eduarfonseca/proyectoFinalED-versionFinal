@@ -1,174 +1,90 @@
 package Modelos;
 
-import Interfaces.GeneradorTablero;
-import Interfaces.GestionadorMeta;
-import Interfaces.GestionadorTablero;
-import kotlin.Pair;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import cu.edu.cujae.ceis.graph.LinkedGraph;
+import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
+import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedVertexNotDirectedGraph;
+import java.util.LinkedList;
 
-public class Tablero implements GeneradorTablero, GestionadorMeta, GestionadorTablero {
-    private static Tablero instancia; // Instancia única de la clase
-    private final boolean[][] tablero; // true: activa, false: inactiva
+public class Tablero {
+    private ILinkedWeightedVertexNotDirectedGraph grafo;
     private int filas;
     private int columnas;
-    private final Random random;
-    private int[] meta; // Coordenadas de la meta [fila, columna]
 
-    // Constructor privado
-    private Tablero(int filas, int columnas, long seed) {
+    public Tablero(int filas, int columnas) {
         this.filas = filas;
         this.columnas = columnas;
-        this.tablero = new boolean[filas][columnas];
-        this.random = new Random(seed);
+        this.grafo = new LinkedGraph(); // Asume que LinkedGraph implementa ILinkedWeightedVertexNotDirectedGraph
+        inicializarTablero();
+    }
 
-        // Inicializa todas las casillas como activas
+    private void inicializarTablero() {
+        // Crear vértices para cada casilla
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                tablero[i][j] = true;
+                Casilla casilla = new Casilla(i, j, true); // Todas las casillas activas por defecto
+                grafo.insertWVertex(casilla, 0); // Peso inicial 0
             }
         }
 
-        inicializarMeta();
-    }
-
-    public void setFilas(int filas) {
-        this.filas = filas;
-    }
-
-    public void setColumnas(int columnas) {
-        this.columnas = columnas;
-    }
-
-    public static Tablero getInstancia(int filas, int columnas, long seed) {
-        if (instancia == null) {
-            instancia = new Tablero(filas, columnas, seed);
-        }
-        return instancia;
-    }
-
-
-    // Implementación de TableroGenerador
-    @Override
-    public void inicializarCasillasInactivas(int porcentajeInactivas) {
-        if (porcentajeInactivas < 0 || porcentajeInactivas > 100) {
-            throw new IllegalArgumentException("El porcentaje debe estar entre 0 y 100.");
-        }
-
-        int totalCasillas = filas * columnas;
-        int cantidadInactivas = (int) Math.ceil((porcentajeInactivas / 100.0) * totalCasillas);
-
-        int inactivasColocadas = 0;
-
-        while (inactivasColocadas < cantidadInactivas) {
-            int filaAleatoria = random.nextInt(filas);
-            int columnaAleatoria = random.nextInt(columnas);
-
-            if (tablero[filaAleatoria][columnaAleatoria]) {
-                tablero[filaAleatoria][columnaAleatoria] = false;
-                inactivasColocadas++;
-            }
-        }
-
-        generarRutaActiva();
-        ajustarMeta();
-    }
-
-    @Override
-    public void mostrarTablero() {
+        // Conectar casillas adyacentes (aristas no tienen peso)
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                if (meta[0] == i && meta[1] == j) {
-                    System.out.print("M ");
-                } else {
-                    System.out.print(tablero[i][j] ? "A " : "I ");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    @Override
-    public boolean[][] getTablero() {
-        return tablero;
-    }
-
-    // Implementación de MetaManager
-    @Override
-    public int[] getMeta() {
-        return meta;
-    }
-
-    @Override
-    public void setMeta(int[] meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public void ajustarMeta() {
-        if (!tablero[meta[0]][meta[1]]) {
-            inicializarMeta();
-        }
-    }
-
-    private void inicializarMeta() {
-        int fila, columna;
-        do {
-            fila = random.nextInt(filas);
-            columna = random.nextInt(columnas);
-        } while (!tablero[fila][columna]);
-
-        meta = new int[]{fila, columna};
-    }
-
-    // Implementación de TableroEstado
-    @Override
-    public List<Pair<Integer, Integer>> obtenerCasillasActivas() {
-        List<Pair<Integer, Integer>> casillasActivas = new ArrayList<>();
-
-        for (int fila = 0; fila < tablero.length; fila++) {
-            for (int columna = 0; columna < tablero[fila].length; columna++) {
-                if (tablero[fila][columna]) {
-                    casillasActivas.add(new Pair<>(fila, columna));
-                }
+                if (i > 0) grafo.insertEdgeNDG(i * columnas + j, (i - 1) * columnas + j); // Arriba
+                if (i < filas - 1) grafo.insertEdgeNDG(i * columnas + j, (i + 1) * columnas + j); // Abajo
+                if (j > 0) grafo.insertEdgeNDG(i * columnas + j, i * columnas + (j - 1)); // Izquierda
+                if (j < columnas - 1) grafo.insertEdgeNDG(i * columnas + j, i * columnas + (j + 1)); // Derecha
             }
         }
-
-        return casillasActivas;
     }
 
-    @Override
-    public Pair<Integer, Integer> obtenerMeta() {
-        return new Pair<>(meta[0], meta[1]);
+    public void actualizarPesos(Casilla meta) {
+        // Crear una copia de la lista de vértices para evitar ConcurrentModificationException
+        LinkedList<Vertex> vertices = new LinkedList<>(grafo.getVerticesList());
+
+        for (Vertex v : vertices) {
+            Casilla casilla = (Casilla) v.getInfo(); // Obtener la Casilla del vértice
+            int distancia = distanciaManhattan(casilla, meta); // Calcular la distancia a la meta
+
+            // Crear un nuevo WeightedVertex con el peso actualizado
+            WeightedVertex nuevoVertice = new WeightedVertex(casilla, distancia);
+
+            // Reemplazar el vértice antiguo con el nuevo
+            reemplazarVertice((WeightedVertex) v, nuevoVertice);
+        }
     }
 
-    @Override
+    private void reemplazarVertice(WeightedVertex viejo, WeightedVertex nuevo) {
+        // Obtener la posición del vértice antiguo
+        int pos = grafo.getVerticesList().indexOf(viejo);
+        if (pos != -1) {
+            // Eliminar el vértice antiguo
+            grafo.deleteVertex(pos);
+
+            // Insertar el nuevo vértice
+            grafo.insertWVertex(nuevo, nuevo.getWeight());
+
+            // Restaurar las conexiones (aristas) del vértice antiguo
+            LinkedList<Vertex> adyacentes = grafo.adjacentsG(pos);
+            for (Vertex adyacente : adyacentes) {
+                grafo.insertEdgeNDG(grafo.getVerticesList().indexOf(nuevo), grafo.getVerticesList().indexOf(adyacente));
+            }
+        }
+    }
+
+    private int distanciaManhattan(Casilla a, Casilla b) {
+        return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY());
+    }
+
+    public ILinkedWeightedVertexNotDirectedGraph getGrafo() {
+        return grafo;
+    }
+
     public int getFilas() {
         return filas;
     }
 
-    @Override
     public int getColumnas() {
         return columnas;
     }
-
-    // Método auxiliar privado
-    private void generarRutaActiva() {
-        int fila = 0;
-        int columna = 0;
-
-        tablero[fila][columna] = true;
-
-        while (fila < filas - 1 || columna < columnas - 1) {
-            if (fila < filas - 1 && (columna == columnas - 1 || random.nextBoolean())) {
-                fila++;
-            } else {
-                columna++;
-            }
-            tablero[fila][columna] = true;
-        }
-    }
 }
-
-

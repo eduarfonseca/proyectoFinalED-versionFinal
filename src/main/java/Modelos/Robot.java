@@ -1,137 +1,60 @@
 package Modelos;
 
-import Interfaces.GestionTrayectoria;
-import Interfaces.MovimientoRobot;
-import Interfaces.ValidacionRobot;
-import kotlin.Pair;
+import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
+import java.util.LinkedList;
 
-import java.util.ArrayList;
-import java.util.List;
+public class Robot {
+    private Vertex posicionActual;
+    private Tablero tablero;
+    private Vertex meta;
 
-public class Robot implements MovimientoRobot, ValidacionRobot, GestionTrayectoria {
-    private static Robot instancia; // Instancia única de la clase
-    private int filaActual;
-    private int columnaActual;
-    private final int pasosMaximos;
-    private List<Paso> pasos;
-
-    private Robot(int filaInicial, int columnaInicial, int pasosMaximos) { // Constructor privado
-        this.filaActual = filaInicial;
-        this.columnaActual = columnaInicial;
-        this.pasosMaximos = pasosMaximos;
-        this.pasos = new ArrayList<>();
+    public Robot(Tablero tablero, Vertex meta) {
+        this.tablero = tablero;
+        this.meta = meta;
+        this.posicionActual = obtenerCasillaAleatoria();
     }
 
-    // Método estático para obtener la instancia única
-    public static synchronized Robot getInstancia(int filaInicial, int columnaInicial, int pasosMaximos) {
-        if (instancia == null) {
-            instancia = new Robot(filaInicial, columnaInicial, pasosMaximos);
-        }
-        return instancia;
+    private Vertex obtenerCasillaAleatoria() {
+        LinkedList<Vertex> vertices = tablero.getGrafo().getVerticesList();
+        return vertices.get((int) (Math.random() * vertices.size()));
     }
 
-    // Implementación de MovimientoRobot
-    @Override
-    public List<Paso> moverHaciaMeta(boolean[][] tablero, int metaFila, int metaColumna) {
-        int pasosDados = 0;
+    public void mover() {
+        int steps = 0;
+        int maxSteps = (tablero.getFilas() * tablero.getColumnas()) / 2;
 
-        if (!tablero[filaActual][columnaActual]) {
-            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "¡Perdió! Inicio en casilla inactiva."));
-            return pasos;
+        while (steps < maxSteps && !posicionActual.equals(meta)) {
+            Vertex siguiente = encontrarMejorMovimiento();
+            if (siguiente == null || siguiente.equals(posicionActual)) {
+                break; // No hay mejora
+            }
+            posicionActual = siguiente;
+            steps++;
         }
 
-        pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Inicio"));
-
-        while (!(filaActual == metaFila && columnaActual == metaColumna) && pasosDados < pasosMaximos) {
-            List<int[]> movimientosValidos = new ArrayList<>();
-            int mejorDistancia = calcularDistanciaManhattan(filaActual, columnaActual, metaFila, metaColumna);
-
-            for (int[] movimiento : obtenerMovimientosPosibles()) {
-                int nuevaFila = filaActual + movimiento[0];
-                int nuevaColumna = columnaActual + movimiento[1];
-
-                if (esMovimientoValido(tablero, nuevaFila, nuevaColumna)) {
-                    int nuevaDistancia = calcularDistanciaManhattan(nuevaFila, nuevaColumna, metaFila, metaColumna);
-
-                    if (nuevaDistancia <= mejorDistancia) {
-                        mejorDistancia = nuevaDistancia;
-                        movimientosValidos.add(new int[]{nuevaFila, nuevaColumna});
-                    }
-                }
-            }
-
-            pasosDados++;
-
-            if (movimientosValidos.isEmpty()) {
-                pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Paso perdido. No hay movimientos válidos."));
-                continue;
-            }
-
-            int[] mejorMovimiento = movimientosValidos.get(0);
-            filaActual = mejorMovimiento[0];
-            columnaActual = mejorMovimiento[1];
-
-            if (!tablero[filaActual][columnaActual]) {
-                pasos.add(new Paso(pasosDados, filaActual, columnaActual, "¡Perdió! Casilla inactiva."));
-                return pasos;
-            }
-
-            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Movimiento realizado."));
-        }
-
-        if (filaActual == metaFila && columnaActual == metaColumna) {
-            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "Meta alcanzada."));
+        if (posicionActual.equals(meta)) {
+            System.out.println("El robot alcanzó la meta en " + steps + " pasos.");
         } else {
-            pasos.add(new Paso(pasosDados, filaActual, columnaActual, "No se pudo llegar a la meta. Pasos máximos alcanzados."));
+            System.out.println("El robot no pudo alcanzar la meta en el límite de pasos.");
+        }
+    }
+
+    private Vertex encontrarMejorMovimiento() {
+        Vertex mejor = posicionActual;
+        int minPeso = (Integer) ((WeightedVertex) posicionActual).getWeight();
+
+        LinkedList<Vertex> adyacentes = tablero.getGrafo().adjacentsG(tablero.getGrafo().getVerticesList().indexOf(posicionActual));
+        for (Vertex vecino : adyacentes) {
+            int pesoVecino = (Integer) ((WeightedVertex) vecino).getWeight();
+            if (pesoVecino < minPeso) {
+                mejor = vecino;
+                minPeso = pesoVecino;
+            }
         }
 
-        return pasos;
-    }
-
-    @Override
-    public List<int[]> obtenerMovimientosPosibles() {
-        return List.of(
-                new int[]{-1, 0}, // Arriba
-                new int[]{1, 0},  // Abajo
-                new int[]{0, -1}, // Izquierda
-                new int[]{0, 1}   // Derecha
-        );
-    }
-
-    // Implementación de ValidacionRobot
-    @Override
-    public int calcularDistanciaManhattan(int fila1, int columna1, int fila2, int columna2) {
-        return Math.abs(fila1 - fila2) + Math.abs(columna1 - columna2);
-    }
-
-    @Override
-    public boolean esMovimientoValido(boolean[][] tablero, int nuevaFila, int nuevaColumna) {
-        return nuevaFila >= 0 && nuevaFila < tablero.length &&
-                nuevaColumna >= 0 && nuevaColumna < tablero[0].length &&
-                tablero[nuevaFila][nuevaColumna];
-    }
-
-    // Implementación de GestionTrayectoria
-    @Override
-    public List<Pair<Integer, Integer>> obtenerTrayectoria() {
-        List<Pair<Integer, Integer>> trayectoria = new ArrayList<>();
-
-        for (Paso paso : pasos) {
-            trayectoria.add(new Pair<>(paso.getFila(), paso.getColumna()));
-        }
-
-        return trayectoria;
-    }
-
-    public int getPasosMaximos() {
-        return pasosMaximos;
-    }
-
-    public Pair<Integer,Integer> obtenerPasoActual() {
-        return new Pair<>(filaActual, columnaActual);
+        return mejor;
     }
 }
-
-
 
 

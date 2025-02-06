@@ -1,33 +1,37 @@
+import Modelos.Casilla
+import Modelos.Meta
 import Modelos.Robot
 import Modelos.Tablero
 import Vistas.Componentes.sideBar
 import Vistas.InicioScreen
-import Vistas.TableroScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedVertexNotDirectedGraph
+import cu.edu.cujae.ceis.graph.vertex.Vertex
+
 
 @Composable
 fun App() {
+    // Crear un tablero de 5x5
+    val tablero = Tablero(5, 5)
+    val grafo: ILinkedWeightedVertexNotDirectedGraph = tablero.grafo
 
-    // Parámetros iniciales del Tablero y Robot
-    val filas = 10
-    val columnas = 10
-    val seed = System.currentTimeMillis()
-    val pasosMaximos = (filas * columnas) / 2
+    // Establecer la meta (esquina inferior derecha)
+    val metaVertex: Vertex = grafo.verticesList[4 * 5 + 4] // Fila 4, Columna 4
+    metaVertex.info = Meta(4, 4)
+    val metaCasilla = metaVertex.info as Meta
 
-    // Instancia única de Tablero
-    val tablero = remember { Tablero.getInstancia(filas, columnas, seed) }
+    // Actualizar pesos del grafo según la meta
+    tablero.actualizarPesos(metaCasilla)
 
-    // Instancia única de Robot
-    val robot = remember {
-        val filaInicial = 0
-        val columnaInicial = 0
-        Robot.getInstancia(filaInicial, columnaInicial, pasosMaximos)
-    }
+    // Crear el robot y ejecutar la simulación
+    val robot = Robot(tablero, metaVertex)
+    robot.mover()
+
     var selectedItem by remember { mutableStateOf("Inicio") }
 
     // Mostrar la estructura con la barra lateral y el contenido principal
@@ -48,11 +52,9 @@ fun App() {
             ) {
                 when (selectedItem) {
                     "Inicio" -> InicioScreen()
-                    "Tablero" -> TableroScreen(robot, tablero)
+//                    "Tablero" -> TableroScreen(robot, tablero)
                 }
             }
         }
-
     }
-
 }
