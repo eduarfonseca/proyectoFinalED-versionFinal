@@ -5,7 +5,7 @@ import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import java.util.LinkedList;
 
 public class Trayectoria {
-    private LinkedList<Vertex> casillas; // Lista de casillas en la trayectoria
+    private final LinkedList<Vertex> casillas; // Lista de casillas en la trayectoria
 
     public Trayectoria() {
         this.casillas = new LinkedList<>();

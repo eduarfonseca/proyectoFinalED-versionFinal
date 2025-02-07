@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Tablero {
-    private ILinkedWeightedVertexNotDirectedGraph grafo;
+    private final ILinkedWeightedVertexNotDirectedGraph grafo;
     private int filas;
     private int columnas;
 

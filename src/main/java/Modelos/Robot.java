@@ -63,7 +63,7 @@ public class Robot {
 
     public void setPosicionActual(Vertex posicionActual) {
         if (posicionActual != null) {
-            this.posicionActual = (WeightedVertex) posicionActual;
+            this.posicionActual = posicionActual;
         }
     }
 
