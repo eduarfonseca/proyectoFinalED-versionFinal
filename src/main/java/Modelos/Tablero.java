@@ -4,7 +4,12 @@ import cu.edu.cujae.ceis.graph.LinkedGraph;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedVertexNotDirectedGraph;
+import kotlin.Pair;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Tablero {
     private ILinkedWeightedVertexNotDirectedGraph grafo;
@@ -40,15 +45,13 @@ public class Tablero {
 
     public void actualizarPesos(Casilla meta) {
         // Crear una copia de la lista de vértices para evitar ConcurrentModificationException
-        LinkedList<Vertex> vertices = new LinkedList<>(grafo.getVerticesList());
+        List<Vertex> copiaVertices = new ArrayList<>(grafo.getVerticesList());
 
-        for (Vertex v : vertices) {
+        for (Vertex v : copiaVertices) {
             Casilla casilla = (Casilla) v.getInfo(); // Obtener la Casilla del vértice
             int distancia = distanciaManhattan(casilla, meta); // Calcular la distancia a la meta
-
             // Crear un nuevo WeightedVertex con el peso actualizado
             WeightedVertex nuevoVertice = new WeightedVertex(casilla, distancia);
-
             // Reemplazar el vértice antiguo con el nuevo
             reemplazarVertice((WeightedVertex) v, nuevoVertice);
         }
@@ -86,5 +89,43 @@ public class Tablero {
 
     public int getColumnas() {
         return columnas;
+    }
+
+    public LinkedList<Casilla> obtenerCasillasActivas() {
+        LinkedList<Casilla> casillas = new LinkedList<>();
+        Iterator<Vertex> it = grafo.getVerticesList().iterator();
+
+        while (it.hasNext()) {
+            Vertex v = it.next();
+            Casilla casilla = (Casilla) v.getInfo();
+            if (casilla.isActiva())
+                casillas.addLast(casilla);
+        }
+        return casillas;
+    }
+
+    public List<Pair<Integer, Integer>> obtenerParesCasillasActiv() {
+        List<Pair<Integer, Integer>> pares = new LinkedList<>();
+        Iterator<Casilla> itActivas = this.obtenerCasillasActivas().iterator();
+        while (itActivas.hasNext()) {
+            Casilla casilla = itActivas.next();
+            pares.add(new Pair<>(casilla.getX(), casilla.getY()));
+        }
+        return pares;
+    }
+
+    public void setColumnas(int columnas) {
+        if (columnas > 0)
+            this.columnas = columnas;
+    }
+
+    public void setFilas(int filas) {
+        if (filas > 0)
+            this.filas = filas;
+    }
+
+    public Vertex obtenerCasillaAleatoria() {
+        LinkedList<Vertex> vertices = grafo.getVerticesList();
+        return vertices.get((int) (Math.random() * vertices.size()));
     }
 }

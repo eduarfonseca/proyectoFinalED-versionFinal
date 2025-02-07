@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedVertexNotDirectedGraph
 import cu.edu.cujae.ceis.graph.vertex.Vertex
+import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 
 
 @Composable
@@ -21,7 +22,7 @@ fun App() {
     val grafo: ILinkedWeightedVertexNotDirectedGraph = tablero.grafo
 
     // Establecer la meta (esquina inferior derecha)
-    val metaVertex: Vertex = grafo.verticesList[4 * 5 + 4] // Fila 4, Columna 4
+    val metaVertex: Vertex = grafo.verticesList[4 * 5 + 4]// Fila 4, Columna 4
     metaVertex.info = Meta(4, 4)
     val metaCasilla = metaVertex.info as Meta
 

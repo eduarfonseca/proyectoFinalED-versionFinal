@@ -1,10 +1,8 @@
 package Modelos;
 
-import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
-
 public class Casilla {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private boolean activa;
 
     public Casilla(int x, int y, boolean activa) {
