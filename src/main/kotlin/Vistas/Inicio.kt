@@ -1,5 +1,7 @@
 package Vistas
 
+import Modelos.Robot
+import Modelos.Tablero
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,7 +55,7 @@ fun InicioScreen() {
 
         // Botón para comenzar
         Button(
-            onClick = { /* Acción al presionar el botón, como navegar a otra pantalla */ },
+            onClick = {},
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
             modifier = Modifier.padding(top = 16.dp)
         ) {

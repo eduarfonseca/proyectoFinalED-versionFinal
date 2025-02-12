@@ -3,8 +3,10 @@ package Vistas.Componentes
 import Modelos.Robot
 import Modelos.Tablero
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -34,6 +38,15 @@ import androidx.compose.ui.unit.sp
 //        verticalArrangement = Arrangement.Center,
 //        horizontalAlignment = Alignment.CenterHorizontally
 //    ) {
+//        Text(
+//            text = "Matriz de tamaño: ${tableroState.filas} x ${tableroState.columnas}",
+//            style = MaterialTheme.typography.overline,
+//            fontWeight = FontWeight.Bold,
+//            color = Color.White,
+//            fontSize = 14.sp,
+//            textAlign = TextAlign.Center,
+//        )
+//
 //        repeat(filas) { fila ->
 //            Row(
 //                modifier = Modifier.fillMaxWidth(),
@@ -41,6 +54,8 @@ import androidx.compose.ui.unit.sp
 //            ) {
 //                repeat(columnas) { columna ->
 //                    val posicionActual = Pair(fila, columna)
+//                    val trayectoria = trayectoriaState
+//
 //                    if (casillasActivas != null) {
 //                        Box(
 //                            modifier = Modifier
@@ -48,20 +63,34 @@ import androidx.compose.ui.unit.sp
 //                                .padding(2.dp)
 //                                .background(
 //                                    when {
-//                                        posicionActual == posicionRobot -> Color(154, 105, 214) // Posición del robot
-//                                        posicionActual == meta -> Color(199, 78, 78) // Casilla meta
-//                                        posicionActual in trayectoria -> Color(237, 195, 107) // Trayectoria
-//                                        posicionActual in casillasActivas -> Color(88, 157, 93) // Casilla activa
-//                                        else -> Color.Gray // Casilla inactiva
+//                                        casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
+//                                        casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
+//                                        posicionActual in trayectoria -> Color(237, 195, 107)
+//                                        posicionActual in casillasActivas -> Color(88, 157, 93)
+//                                        else -> Color.Gray
 //                                    },
 //                                    shape = RoundedCornerShape(4.dp)
-//                                ),
+//                                )
+//                                .clickable(
+//                                    enabled = modoSeleccion != null
+//                                ) {
+//                                    val casillaSeleccionada = crearCasillaSeleccionada(fila, columna)
+//                                    when (modoSeleccion) {
+//                                        "meta" -> {
+//                                            casillaMeta = casillaSeleccionada
+//                                            modoSeleccion = null
+//                                        }
+//
+//                                        "inicio" -> {
+//                                            casillaInicio = casillaSeleccionada
+//                                            modoSeleccion = null
+//                                        }
+//                                    }
+//                                },
 //                            contentAlignment = Alignment.Center
-//                        )
-//                        {
-//                            // Mostrar coordenadas solo como referencia
+//                        ) {
 //                            Text(
-//                                text = "${fila + 1},${columna + 1}",
+//                                text = "${fila},${columna}",
 //                                fontSize = 10.sp,
 //                                color = Color.White
 //                            )

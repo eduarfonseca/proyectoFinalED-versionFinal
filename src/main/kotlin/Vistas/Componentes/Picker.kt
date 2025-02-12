@@ -32,33 +32,35 @@ fun NumberPicker(
 ) {
     var currentValue by remember { mutableStateOf(value.coerceIn(minValue, maxValue)) }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.background(Color(16, 78, 146), RoundedCornerShape(8.dp)),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.Center).background(Color(16, 78, 146), RoundedCornerShape(8.dp))
-        ) {
-            IconButton(onClick = {
-                if (currentValue > minValue) {
-                    currentValue -= increment
-                    onValueChange(currentValue)
-                }
-            }) {
-                Icon(imageVector = Icons.Filled.Remove, contentDescription = "Remove")
+        IconButton(onClick = {
+            if (currentValue > minValue) {
+                currentValue -= increment
+                onValueChange(currentValue)
             }
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Remove,
+                contentDescription = "Remove",
+            )
+        }
 
-            Text(text = currentValue.toString(), modifier = Modifier.padding(horizontal = 6.dp))
+        Text(text = currentValue.toString(), modifier = Modifier.padding(horizontal = 6.dp))
 
-            IconButton(onClick = {
-                if (currentValue < maxValue) {
-                    currentValue += increment
-                    onValueChange(currentValue)
-                }
-            }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+        IconButton(onClick = {
+            if (currentValue < maxValue) {
+                currentValue += increment
+                onValueChange(currentValue)
             }
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add"
+            )
         }
     }
 }
@@ -69,12 +71,14 @@ fun MatrixSizePicker(
     columns: Int = 3,
     onRowChange: (Int) -> Unit,
     onColumnChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var currentRows by remember { mutableStateOf(rows) }
     var currentColumns by remember { mutableStateOf(columns) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(text = "Filas: ", style = MaterialTheme.typography.bodyLarge, fontSize = 14.sp, color = Color.White)
         NumberPicker(
@@ -85,12 +89,12 @@ fun MatrixSizePicker(
             },
             minValue = 1,
             maxValue = 100,
-            modifier = Modifier.fillMaxHeight(0.05f).width(200.dp)
+            modifier = modifier
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = "Columnas: ", style = MaterialTheme.typography.bodyLarge, fontSize =  14.sp, color = Color.White)
+        Text(text = "Columnas: ", style = MaterialTheme.typography.bodyLarge, fontSize = 14.sp, color = Color.White)
         NumberPicker(
             value = currentColumns,
             onValueChange = {
@@ -99,7 +103,7 @@ fun MatrixSizePicker(
             },
             minValue = 1,
             maxValue = 100,
-            modifier = Modifier.fillMaxHeight(0.05f).width(200.dp)
+            modifier = modifier
         )
     }
 }

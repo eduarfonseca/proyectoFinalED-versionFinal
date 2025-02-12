@@ -31,4 +31,12 @@ public class Casilla {
     public String toString() {
         return "Casilla(" + x + ", " + y + ", " + (activa ? "activa" : "inactiva") + ")";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Casilla casilla = (Casilla) o;
+        return x == casilla.x && y == casilla.y;
+    }
 }

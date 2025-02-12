@@ -4,6 +4,7 @@ import Modelos.Robot
 import Modelos.Tablero
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,21 +17,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 
 @Composable
-fun TableroScreen(robot: Robot, tablero: Tablero) {
+fun TableroScreen(tablero: Tablero) {
+    var filas by remember { mutableStateOf(tablero.filas) }
+    var columnas by remember { mutableStateOf(tablero.columnas) }
+    var casillasActivas by remember { mutableStateOf(tablero.obtenerParesCasillasActiv()) }
+    var tableroState by remember { mutableStateOf(tablero) }
+    var selectedNumber by remember { mutableStateOf(0) }
+    // Estados para las dos casillas seleccionadas usando la nueva clase
+    var casillaMeta by remember { mutableStateOf<CasillaSeleccionada?>(CasillaSeleccionada(1, Pair(0,1))) }
+    var casillaInicio by remember { mutableStateOf<CasillaSeleccionada?>(CasillaSeleccionada(0, Pair(0,0))) }
 
-    var filas by remember{mutableStateOf(tablero.filas)}
-    var columnas by remember{mutableStateOf(tablero.columnas)}
-    var casillasActivas by remember{ mutableStateOf(tablero.obtenerParesCasillasActiv()) }
-    val posicionRobotState by remember{ mutableStateOf(robot.posicionActual) }
-    val metaState by remember{mutableStateOf(robot.obtenerMeta())}
-    val trayectoriaState by remember{ mutableStateOf(robot.gestorTrayectoria.obtenerPairsTrayectoria()) }
+    var modoSeleccion by remember { mutableStateOf<String?>(null) }
 
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+    // Modificar estos estados para que sean mutables y observables
+    var meta: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[0] as WeightedVertex?) }
+    var robotState by remember { mutableStateOf(Robot(tablero, meta)) }
+    var posicionRobotState by remember { mutableStateOf(robotState.posicionActual) }
+    var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
+    val metaState by remember { mutableStateOf(robotState.obtenerMeta()) }
+
+    // Efecto para actualizar la trayectoria cuando cambie el robot
+    LaunchedEffect(robotState) {
+        casillasActivas = tableroState.obtenerParesCasillasActiv()
+        posicionRobotState = robotState.posicionActual
+        trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
+        tableroState = Tablero(filas,columnas)
+        robotState.setPosicionActual(tablero.grafo.verticesList[casillaInicio?.numero!!] as WeightedVertex)
+        meta = tableroState.grafo.verticesList[casillaMeta?.numero!!] as WeightedVertex?
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         item {
             Text(
                 text = "Configuracion de simulacion",
@@ -40,138 +67,153 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                 color = Color.White,
                 fontSize = 18.sp
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        modoSeleccion = if (modoSeleccion == "meta") null else "meta"
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (modoSeleccion == "meta") Color(0xFF4CAF50) else Color(0xFF1E88E5)
+                    )
+                ) {
+                    Text(
+                        text = "Seleccionar meta",
+                        color = Color.White
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        modoSeleccion = if (modoSeleccion == "inicio") null else "inicio"
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (modoSeleccion == "inicio") Color(0xFF4CAF50) else Color(0xFF1E88E5)
+                    )
+                ) {
+                    Text(
+                        text = "Seleccionar casilla de inicio",
+                        color = Color.White
+                    )
+                }
+            }
+
+
+            // Mostrar información de las casillas seleccionadas
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                casillaMeta?.let { casilla ->
+                    Text(
+                        text = "meta casilla - Número: ${casilla.numero}, Coordenadas: (${casilla.coordenadas.first},${casilla.coordenadas.second})",
+                        style = MaterialTheme.typography.overline,
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                }
+                casillaInicio?.let { casilla ->
+                    Text(
+                        text = "inicio casilla - Número: ${casilla.numero}, Coordenadas: (${casilla.coordenadas.first},${casilla.coordenadas.second})",
+                        style = MaterialTheme.typography.overline,
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .zIndex(2f)
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                Box(modifier = Modifier.weight(1f)) {
-//                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                        Text(
-//                            text = "Cantidad de pasos posibles",
-//                            style = MaterialTheme.typography.overline,
-//                            fontWeight = FontWeight.Bold,
-//                            color = Color.White,
-//                            fontSize = 14.sp,
-//                        )
-//                        // Estado para el valor seleccionado
-//                        var selectedNumber by remember { mutableStateOf(robot.pasosMaximos) }
-//                        NumberPicker(
-//                            value = selectedNumber,
-//                            onValueChange = { selectedNumber = it },
-//                            increment = 1,
-//                            minValue = 1,
-//                            maxValue = robot.pasosMaximos,
-//                            modifier = Modifier.fillMaxHeight(0.05f).width(200.dp)
-//                        )
-////                        Button(
-////                            onClick = { robotState. },
-////                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
-////                            modifier = Modifier.padding(top = 16.dp)
-////                        ) {
-////                            Text(
-////                                text = "Aplicar",
-////                                fontSize = 18.sp,
-////                                fontWeight = FontWeight.Medium,
-////                                color = Color.White
-////                            )
-////                        }
-//                    }
-//                }
                 Spacer(modifier = Modifier.width(10.dp))
-                Box(modifier = Modifier.weight(1f)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Tamaño de la matriz",
+                        style = MaterialTheme.typography.overline,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    var rows by remember { mutableStateOf(filas) }
+                    var columns by remember { mutableStateOf(columnas) }
+
+                    MatrixSizePicker(
+                        rows = rows,
+                        columns = columns,
+                        onRowChange = { rows = it },
+                        onColumnChange = { columns = it },
+//                        modifier = Modifier.fillMaxHeight(0.3f).fillMaxWidth(0.3f)
+                    )
+
+                    Button(
+                        onClick = {
+                            filas = rows
+                            columnas = columns
+                            tableroState = Tablero(filas, columnas)
+                            tableroState.actualizarPesos(metaState, selectedNumber) // Utilizar selectedNumber
+                            casillasActivas = tableroState.obtenerParesCasillasActiv()
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
                         Text(
-                            text = "Tamaño de la matriz",
-                            style = MaterialTheme.typography.overline,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 14.sp,
+                            text = "Aplicar",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
                         )
-                        var rows by remember { mutableStateOf(filas) }
-                        var columns by remember { mutableStateOf(columnas) }
-
-                        MatrixSizePicker(
-                            rows = rows,
-                            columns = columns,
-                            onRowChange = { rows = it },
-                            onColumnChange = { columns = it }
-                        )
-
-                        Button(
-                            onClick = {
-                                filas = rows
-                                columnas = columns
-                                tablero.filas = rows
-                                tablero.columnas = columns
-                                casillasActivas = tablero.obtenerParesCasillasActiv()
-                            },
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
-                            modifier = Modifier.padding(top = 16.dp)
-                        ) {
-                            Text(
-                                text = "Aplicar",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White
-                            )
-                        }
-
                     }
                 }
+
                 Spacer(modifier = Modifier.width(10.dp))
-                Box(modifier = Modifier.weight(1f)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Porcentaje de casillas inactivas",
+                        style = MaterialTheme.typography.overline,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    NumberPicker(
+                        value = selectedNumber,
+                        onValueChange = { selectedNumber = it },
+                        increment = 1,
+                        minValue = 1,
+                        maxValue = 100,
+                        modifier = Modifier.fillMaxHeight(0.09f)
+                    )
+
+                    Button(
+                        onClick = {
+                            tableroState.desactivarCasillasAleatoriamente(selectedNumber)
+                            casillasActivas = tableroState.obtenerParesCasillasActiv() // Actualizar casillas activas
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
                         Text(
-                            text = "Porcentaje de casillas inactivas",
-                            style = MaterialTheme.typography.overline,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 14.sp,
+                            text = "Aplicar",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
                         )
-                        // Estado para el valor seleccionado
-                        var selectedNumber by remember { mutableStateOf(20) }
-
-                        NumberPicker(
-                            value = selectedNumber,
-                            onValueChange = { selectedNumber = it },
-                            increment = 1,
-                            minValue = 1,
-                            maxValue = 100
-                        )
-
-//                        Button(
-//                            onClick = {
-//                                tablero.inicializarCasillasInactivas(selectedNumber)
-//                                casillasActivas = tablero.obtenerCasillasActivas()
-//                            },
-//                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
-//                            modifier = Modifier.padding(top = 16.dp)
-//                        ) {
-//                            Text(
-//                                text = "Aplicar",
-//                                fontSize = 18.sp,
-//                                fontWeight = FontWeight.Medium,
-//                                color = Color.White
-//                            )
-//                        }
-
                     }
-
-
                 }
             }
-
-            Text(
-                text = "Matriz de tamaño: ${tablero.filas} x ${tablero.columnas}",
-                style = MaterialTheme.typography.overline,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontSize = 14.sp,
-            )
 
             Column(
                 modifier = Modifier
@@ -180,6 +222,15 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "Matriz de tamaño: ${tableroState.filas} x ${tableroState.columnas}",
+                    style = MaterialTheme.typography.overline,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                )
+
                 repeat(filas) { fila ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -187,31 +238,43 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                     ) {
                         repeat(columnas) { columna ->
                             val posicionActual = Pair(fila, columna)
-                            val meta = Pair(metaState.x, metaState.y)
-                            val posicionRobot = Pair(posicionRobotState.x, posicionRobotState.y)
                             val trayectoria = trayectoriaState
-                            if (casillasActivas != null) {
 
+                            if (casillasActivas != null) {
                                 Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .padding(2.dp)
                                         .background(
                                             when {
-                                                posicionActual == posicionRobot -> Color(154, 105, 214) // Posición del robot
-                                                posicionActual == meta -> Color(199, 78, 78) // Casilla meta
-                                                posicionActual in trayectoria -> Color(237, 195, 107) // Trayectoria
-                                                posicionActual in casillasActivas -> Color(88, 157, 93) // Casilla activa
-                                                else -> Color.Gray // Casilla inactiva
+                                                casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
+                                                casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
+                                                posicionActual in trayectoria -> Color(237, 195, 107)
+                                                posicionActual in casillasActivas -> Color(88, 157, 93)
+                                                else -> Color.Gray
                                             },
                                             shape = RoundedCornerShape(4.dp)
-                                        ),
+                                        )
+                                        .clickable(
+                                            enabled = modoSeleccion != null
+                                        ) {
+                                            val casillaSeleccionada = crearCasillaSeleccionada(fila, columna)
+                                            when (modoSeleccion) {
+                                                "meta" -> {
+                                                    casillaMeta = casillaSeleccionada
+                                                    modoSeleccion = null
+                                                }
+
+                                                "inicio" -> {
+                                                    casillaInicio = casillaSeleccionada
+                                                    modoSeleccion = null
+                                                }
+                                            }
+                                        },
                                     contentAlignment = Alignment.Center
-                                )
-                                {
-                                    // Mostrar coordenadas solo como referencia
+                                ) {
                                     Text(
-                                        text = "${fila + 1},${columna + 1}",
+                                        text = "${fila},${columna}",
                                         fontSize = 10.sp,
                                         color = Color.White
                                     )
@@ -221,28 +284,41 @@ fun TableroScreen(robot: Robot, tablero: Tablero) {
                     }
                 }
             }
+
+            Button(
+                onClick = {
+                    robotState = Robot(tableroState,meta)
+                    robotState.mover()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    Color(255, 0, 51)
+                )
+            ) {
+                Text(
+                    text = "Iniciar simulacion",
+                    color = Color.White
+                )
+            }
+
+            leyenda()
         }
     }
 }
 
+fun convertirPosicionANumero(fila: Int, columna: Int): Int {
+    return fila * columna + columna
+}
 
-//@Composable
-//fun Tablero(tablero: Tablero, robot: Robot) {
-//    val filas = tablero.filas
-//    val columnas = tablero.columnas
-//
-//
-//    val casillasActivas = tablero.obtenerCasillasActivas()
-//    val meta = tablero.obtenerMeta() // Meta
-//    val trayectoria = robot.obtenerTrayectoria(pasos) // Pasos recorridos
-//    val posicionRobot = trayectoria[trayectoria.size - 1] // Posición actual del robot
-//
-//    dynamicTablero(
-//        filas = filas,
-//        columnas = columnas,
-//        casillasActivas = casillasActivas,
-//        posicionRobot = posicionRobot,
-//        meta = meta,
-//        trayectoria = trayectoria
-//    )
-//}
+fun crearCasillaSeleccionada(fila: Int, columna: Int): CasillaSeleccionada {
+    return CasillaSeleccionada(
+        numero = convertirPosicionANumero(fila, columna),
+        coordenadas = Pair(fila, columna)
+    )
+}
+
+// Clase para representar una casilla seleccionada
+data class CasillaSeleccionada(
+    val numero: Int,
+    val coordenadas: Pair<Int, Int>
+)
+

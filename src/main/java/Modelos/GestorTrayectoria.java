@@ -1,6 +1,7 @@
 package Modelos;
 
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
 import kotlin.Pair;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class GestorTrayectoria {
         this.trayectoria = new Trayectoria();
     }
 
-    public void agregarPunto(Vertex casilla) {
+    public void agregarPunto(WeightedVertex casilla) {
         trayectoria.agregarCasilla(casilla);
     }
 
@@ -28,9 +29,9 @@ public class GestorTrayectoria {
 
     public List<Pair<Integer,Integer>> obtenerPairsTrayectoria() {
         List<Pair<Integer,Integer>> list = new ArrayList<>();
-        Iterator<Vertex> casillas = trayectoria.getCasillas().iterator();
+        Iterator<WeightedVertex> casillas = trayectoria.getCasillas().iterator();
         while (casillas.hasNext()) {
-            Vertex casilla = casillas.next();
+            WeightedVertex casilla = casillas.next();
             list.add(new Pair<>(((Casilla)casilla.getInfo()).getX(), ((Casilla)casilla.getInfo()).getY()));
         }
         return list;
