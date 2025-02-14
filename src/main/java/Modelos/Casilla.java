@@ -34,7 +34,6 @@ public class Casilla {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Casilla casilla = (Casilla) o;
         return x == casilla.x && y == casilla.y;

@@ -52,8 +52,10 @@ public class Tablero {
 
         for (Vertex viejo : verticesViejos) {
             Casilla casilla = (Casilla) viejo.getInfo();
-            int distancia = (casilla.equals(meta)) ? 0 : distanciaManhattan(casilla, meta);
-            grafo.insertWVertex(casilla, distancia); // Nuevo WeightedVertex
+            if (casilla.isActiva()){
+                int distancia = (casilla.equals(meta)) ? 0 : distanciaManhattan(casilla, meta);
+                grafo.insertWVertex(casilla, distancia); // Nuevo WeightedVertex
+            }
         }
 
         // Reconectar todas las aristas según coordenadas
@@ -85,71 +87,6 @@ public class Tablero {
         }
         return -1;
     }
-
-//    private void reemplazarVertice(WeightedVertex viejo, WeightedVertex nuevo) {
-//        // 1. Obtener posición del vértice antiguo
-//        int pos = grafo.getVerticesList().indexOf(viejo);
-//        if (pos != -1) {
-//            // 2. Eliminar el vértice antiguo
-//            grafo.deleteVertex(pos);
-//
-//            // 3. Insertar nuevo vértice con la CASILLA como info
-//            grafo.insertWVertex(nuevo.getInfo(), nuevo.getWeight()); // Corrección clave
-//
-//            // 4. Restaurar conexiones usando coordenadas
-//            int nuevoIdx = grafo.getVerticesList().size() - 1;
-//            for (Edge ady : viejo.getEdgeList()) {
-//                int posAdy = encontrarPosicionPorCasilla((Casilla) ady.getVertex().getInfo());
-//                if (posAdy != -1) {
-//                    grafo.insertEdgeNDG(nuevoIdx, posAdy);
-//                }
-//            }
-//        }
-//    }
-
-//    public Vertex obtenerVerticePorCasilla(Casilla casillaBuscada) {
-//        for (Vertex v : grafo.getVerticesList()) {
-//            Casilla c = (Casilla) v.getInfo();
-//            if (c.equals(casillaBuscada)) {
-//                return v;
-//            }
-//        }
-//        throw new IllegalArgumentException("Casilla no encontrada en el grafo");
-//    }
-
-//    public void actualizarPesos(Casilla meta) {
-//        // Crear una copia de la lista de vértices para evitar ConcurrentModificationException
-//        LinkedList<Vertex> copiaVertices = new LinkedList<>(grafo.getVerticesList());
-//        Iterator<Vertex> iterator = copiaVertices.iterator();
-//
-//        while (iterator.hasNext()) {
-//            Vertex v = iterator.next();
-//            Casilla casilla = (Casilla) v.getInfo(); // Obtener la Casilla del vértice
-//            int distancia = distanciaManhattan(casilla, meta); // Calcular la distancia a la meta
-//            // Crear un nuevo WeightedVertex con el peso actualizado
-//            WeightedVertex nuevoVertice = new WeightedVertex(casilla, distancia);
-//            // Reemplazar el vértice antiguo con el nuevo
-//            reemplazarVertice((WeightedVertex) v, nuevoVertice);
-//        }
-//    }
-//
-//    private void reemplazarVertice(WeightedVertex viejo, WeightedVertex nuevo) {
-//        // Obtener la posición del vértice antiguo
-//        int pos = grafo.getVerticesList().indexOf(viejo);
-//        if (pos != -1) {
-//            // Eliminar el vértice antiguo
-//            grafo.deleteVertex(pos);
-//
-//            // Insertar el nuevo vértice
-//            grafo.insertWVertex(nuevo, nuevo.getWeight());
-//
-//            // Restaurar las conexiones (aristas) del vértice antiguo
-//            LinkedList<Vertex> adyacentes = grafo.adjacentsG(pos);
-//            for (Vertex adyacente : adyacentes) {
-//                grafo.insertEdgeNDG(grafo.getVerticesList().indexOf(nuevo), grafo.getVerticesList().indexOf(adyacente));
-//            }
-//        }
-//    }
 
     private int distanciaManhattan(Casilla a, Casilla b) {
         return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY());
