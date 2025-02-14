@@ -258,7 +258,7 @@ fun TableroScreen(tablero: Tablero) {
                                         .clickable(
                                             enabled = modoSeleccion != null
                                         ) {
-                                            val casillaSeleccionada = crearCasillaSeleccionada(fila, columna)
+                                            val casillaSeleccionada = crearCasillaSeleccionada(fila, columnas, columna)
                                             when (modoSeleccion) {
                                                 "meta" -> {
                                                     casillaMeta = casillaSeleccionada
@@ -305,13 +305,13 @@ fun TableroScreen(tablero: Tablero) {
     }
 }
 
-fun convertirPosicionANumero(fila: Int, columna: Int): Int {
-    return fila * columna + columna
+fun convertirPosicionANumero(fila: Int, columnas: Int, columna: Int): Int {
+    return fila * columnas + columna
 }
 
-fun crearCasillaSeleccionada(fila: Int, columna: Int): CasillaSeleccionada {
+fun crearCasillaSeleccionada(fila: Int, columnas: Int, columna: Int): CasillaSeleccionada {
     return CasillaSeleccionada(
-        numero = convertirPosicionANumero(fila, columna),
+        numero = convertirPosicionANumero(fila, columnas, columna),
         coordenadas = Pair(fila, columna)
     )
 }
