@@ -43,6 +43,9 @@ public class Tablero {
     }
 
     public void actualizarPesos(Casilla meta, int porcentajeInactivas) {
+
+        desactivarCasillasAleatoriamente(porcentajeInactivas);
+
         // Reconstruir el grafo con nuevas distancias
         List<Vertex> verticesViejos = new ArrayList<>(grafo.getVerticesList());
         grafo.getVerticesList().clear();
@@ -64,8 +67,6 @@ public class Tablero {
             if (y > 0) reconectar(x, y, x, y - 1);
             if (y < columnas - 1) reconectar(x, y, x, y + 1);
         }
-
-        desactivarCasillasAleatoriamente(porcentajeInactivas);
     }
 
     private void reconectar(int x1, int y1, int x2, int y2) {

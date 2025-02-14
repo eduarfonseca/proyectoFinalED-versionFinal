@@ -12,10 +12,10 @@ public class Robot {
     private final GestorTrayectoria gestorTrayectoria;
     private int pasosDados;
 
-    public Robot(Tablero tablero, WeightedVertex meta) {
+    public Robot(Tablero tablero, WeightedVertex meta, WeightedVertex posicionActual) {
         this.tablero = tablero;
-        this.meta = meta;
-        this.posicionActual = (WeightedVertex) tablero.obtenerCasillaAleatoria();
+        setMeta(meta);
+        setPosicionActual(posicionActual);
         this.gestorTrayectoria = new GestorTrayectoria();
         this.gestorTrayectoria.agregarPunto(posicionActual);
         this.pasosDados = 0;
@@ -71,68 +71,6 @@ public class Robot {
         }
         gestorTrayectoria.mostrarTrayectoria();
     }
-//    public void mover() {
-//        int maxSteps = (tablero.getFilas() * tablero.getColumnas()) / 2;
-//
-//        while (pasosDados < maxSteps && !haLlegadoAMeta()) {
-//            Vertex mejorMovimiento = encontrarMejorMovimiento();
-//
-//            // Si no hay mejor movimiento disponible y no estamos en la meta, contar como paso perdido
-//            if (mejorMovimiento == null) {
-//                pasosDados++;
-//                continue;
-//            }
-//
-//            // Si el mejor movimiento tiene un peso mayor o igual, es un paso perdido
-//            int pesoActual = (Integer) ((WeightedVertex) posicionActual).getWeight();
-//            int pesoMejor = (Integer) ((WeightedVertex) mejorMovimiento).getWeight();
-//
-//            if (pesoMejor >= pesoActual) {
-//                pasosDados++;
-//                continue;
-//            }
-//
-//            // Realizar el movimiento
-//            posicionActual = mejorMovimiento;
-//            gestorTrayectoria.agregarPunto(posicionActual);
-//            pasosDados++;
-//        }
-//
-//        if (haLlegadoAMeta()) {
-//            System.out.println("¡El robot alcanzó la meta en " + pasosDados + " pasos!");
-//        } else {
-//            System.out.println("El robot no pudo alcanzar la meta en el límite de " + maxSteps + " pasos.");
-//        }
-//    }
-
-//    private Vertex encontrarMejorMovimiento() {
-//        Vertex mejorMovimiento = null;
-//        int pesoActual = (Integer) ((WeightedVertex) posicionActual).getWeight();
-//        int mejorPeso = Integer.MAX_VALUE;
-//
-//        LinkedList<Vertex> adyacentes = tablero.getGrafo().adjacentsG(
-//                tablero.getGrafo().getVerticesList().indexOf(posicionActual)
-//        );
-//
-//        for (Vertex vecino : adyacentes) {
-//            Casilla casillaVecina = (Casilla) vecino.getInfo();
-//
-//            // Verificar si la casilla está activa
-//            if (!casillaVecina.isActiva()) {
-//                continue;
-//            }
-//
-//            int pesoVecino = (Integer) ((WeightedVertex) vecino).getWeight();
-//
-//            // Actualizar mejor movimiento si encontramos uno con menor peso
-//            if (pesoVecino < mejorPeso) {
-//                mejorPeso = pesoVecino;
-//                mejorMovimiento = vecino;
-//            }
-//        }
-//
-//        return mejorMovimiento;
-//    }
 
     public Casilla obtenerMeta() {
         return (Casilla) this.meta.getInfo();
@@ -147,11 +85,15 @@ public class Robot {
     }
 
     public void setPosicionActual(WeightedVertex posicionActual) {
-        this.posicionActual = posicionActual;
+        if (((Casilla)posicionActual.getInfo()).isActiva())
+            this.posicionActual = posicionActual;
+        else throw new IllegalArgumentException("La posicion inicial  debe ser activa");
     }
 
     public void setMeta(WeightedVertex meta) {
-        this.meta = meta;
+        if (((Casilla)meta.getInfo()).isActiva())
+            this.meta = meta;
+        else throw new IllegalArgumentException("La meta debe ser activa");
     }
 
     public GestorTrayectoria getGestorTrayectoria() {

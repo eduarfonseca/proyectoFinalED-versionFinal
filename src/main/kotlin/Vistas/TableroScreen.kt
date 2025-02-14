@@ -38,7 +38,8 @@ fun TableroScreen(tablero: Tablero) {
 
     // Modificar estos estados para que sean mutables y observables
     var meta: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[0] as WeightedVertex?) }
-    var robotState by remember { mutableStateOf(Robot(tablero, meta)) }
+    var inicio: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[1] as WeightedVertex?) }
+    var robotState by remember { mutableStateOf(Robot(tablero, meta, inicio)) }
     var posicionRobotState by remember { mutableStateOf(robotState.posicionActual) }
     var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
     val metaState by remember { mutableStateOf(robotState.obtenerMeta()) }
@@ -287,7 +288,7 @@ fun TableroScreen(tablero: Tablero) {
 
             Button(
                 onClick = {
-                    robotState = Robot(tableroState,meta)
+                    robotState = Robot(tableroState,meta, inicio)
                     robotState.mover()
                 },
                 colors = ButtonDefaults.buttonColors(
