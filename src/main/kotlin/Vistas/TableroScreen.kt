@@ -40,19 +40,18 @@ fun TableroScreen(tablero: Tablero) {
     var meta: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[0] as WeightedVertex?) }
     var inicio: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[1] as WeightedVertex?) }
     var robotState by remember { mutableStateOf(Robot(tablero, meta, inicio)) }
-    var posicionRobotState by remember { mutableStateOf(robotState.posicionActual) }
     var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
     val metaState by remember { mutableStateOf(robotState.obtenerMeta()) }
 
     // Efecto para actualizar la trayectoria cuando cambie el robot
-    LaunchedEffect(robotState) {
-        casillasActivas = tableroState.obtenerParesCasillasActiv()
-        posicionRobotState = robotState.posicionActual
-        trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
-        tableroState = Tablero(filas,columnas)
-        robotState.setPosicionActual(tablero.grafo.verticesList[casillaInicio?.numero!!] as WeightedVertex)
-        meta = tableroState.grafo.verticesList[casillaMeta?.numero!!] as WeightedVertex?
-    }
+//    LaunchedEffect(robotState) {
+//        casillasActivas = tableroState.obtenerParesCasillasActiv()
+//        posicionRobotState = robotState.posicionActual
+//        trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
+//        tableroState = Tablero(filas,columnas)
+//        robotState.setPosicionActual(tablero.grafo.verticesList[casillaInicio?.numero!!] as WeightedVertex)
+//        meta = tableroState.grafo.verticesList[casillaMeta?.numero!!] as WeightedVertex?
+//    }
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -264,11 +263,14 @@ fun TableroScreen(tablero: Tablero) {
                                                 "meta" -> {
                                                     casillaMeta = casillaSeleccionada
                                                     modoSeleccion = null
+                                                    meta = tableroState.grafo.verticesList[casillaSeleccionada.numero] as WeightedVertex?
                                                 }
 
                                                 "inicio" -> {
                                                     casillaInicio = casillaSeleccionada
                                                     modoSeleccion = null
+                                                    inicio = tableroState.grafo.verticesList[casillaSeleccionada.numero] as WeightedVertex?
+
                                                 }
                                             }
                                         },
@@ -290,6 +292,7 @@ fun TableroScreen(tablero: Tablero) {
                 onClick = {
                     robotState = Robot(tableroState,meta, inicio)
                     robotState.mover()
+//                    trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
                 },
                 colors = ButtonDefaults.buttonColors(
                     Color(255, 0, 51)
