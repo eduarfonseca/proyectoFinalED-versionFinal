@@ -3,21 +3,21 @@ package Modelos;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Robot {
     private WeightedVertex posicionActual;
     private final Tablero tablero;
     private WeightedVertex meta;
-    private final GestorTrayectoria gestorTrayectoria;
+    private final Trayectoria gestorTrayectoria;
     private int pasosDados;
 
     public Robot(Tablero tablero, WeightedVertex meta, WeightedVertex posicionActual) {
         this.tablero = tablero;
         setMeta(meta);
         setPosicionActual(posicionActual);
-        this.gestorTrayectoria = new GestorTrayectoria();
-        this.gestorTrayectoria.agregarPunto(posicionActual);
+        this.gestorTrayectoria = new Trayectoria();
         this.pasosDados = 0;
     }
 
@@ -58,7 +58,7 @@ public class Robot {
         while (this.pasosDados < maxPasos && !(posicionActual.getInfo()).equals(casillaMeta)) {
             Vertex siguiente = encontrarMejorMovimiento();
             posicionActual = (WeightedVertex) siguiente;
-            gestorTrayectoria.agregarPunto(posicionActual);
+            gestorTrayectoria.agregarCasilla(posicionActual);
             this.pasosDados++;
         }
 
@@ -69,7 +69,7 @@ public class Robot {
         } else {
             System.out.println("Límite de pasos alcanzado (" + maxPasos + ")");
         }
-        gestorTrayectoria.mostrarTrayectoria();
+        //Mostrar trayectoria por consola
     }
 
     public Casilla obtenerMeta() {
@@ -95,10 +95,14 @@ public class Robot {
             this.meta = meta;
         else throw new IllegalArgumentException("La meta debe ser activa");
     }
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+   public int calcularMaxPasos(){
+        return (tablero.getFilas() * tablero.getColumnas()) / 2;
+   }
 
-    public GestorTrayectoria getGestorTrayectoria() {
-        return gestorTrayectoria;
-    }
+
+
+
 }
 
 

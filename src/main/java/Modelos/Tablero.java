@@ -17,7 +17,7 @@ public class Tablero {
     public Tablero(int filas, int columnas) {
         this.filas = filas;
         this.columnas = columnas;
-        this.grafo = new LinkedGraph(); // Asume que LinkedGraph implementa ILinkedWeightedVertexNotDirectedGraph
+        this.grafo = new LinkedGraph();
         inicializarTablero();
     }
 
@@ -25,12 +25,12 @@ public class Tablero {
         // Crear vértices para cada casilla
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                Casilla casilla = new Casilla(i, j, true); // Todas las casillas activas por defecto
-                grafo.insertWVertex(casilla, 0); // Peso inicial 0
+                Casilla casilla = new Casilla(i, j, true);
+                grafo.insertWVertex(casilla, new Heuristica(0)); // Peso inicial 0
             }
         }
 
-        // Conectar casillas adyacentes (aristas no tienen peso)
+        // Conectar casillas
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 if (i > 0) grafo.insertEdgeNDG(i * columnas + j, (i - 1) * columnas + j); // Arriba
@@ -44,70 +44,96 @@ public class Tablero {
 
     public void actualizarPesos(Casilla meta, int porcentajeInactivas) {
 
+        //Asignar Distancias
+        Iterator<Vertex> iter = grafo.getVerticesList().iterator();
+        while (iter.hasNext()) {
+            WeightedVertex vertex = (WeightedVertex) iter.next();
+            Casilla c = (Casilla) vertex.getInfo();
+            int distancia = (c.equals(meta)) ? 0 : distanciaManhattan(c, meta);
+            ((Heuristica)vertex.getWeight()).setDistancia(distancia);
+        }
         desactivarCasillasAleatoriamente(porcentajeInactivas);
-
-        // Reconstruir el grafo con nuevas distancias
-        List<Vertex> verticesViejos = new ArrayList<>(grafo.getVerticesList());
-        grafo.getVerticesList().clear();
-
-        for (Vertex viejo : verticesViejos) {
-            Casilla casilla = (Casilla) viejo.getInfo();
-            if (casilla.isActiva()){
-                int distancia = (casilla.equals(meta)) ? 0 : distanciaManhattan(casilla, meta);
-                grafo.insertWVertex(casilla, distancia); // Nuevo WeightedVertex
-            }
-        }
-
-        // Reconectar todas las aristas según coordenadas
-        for (int i = 0; i < verticesViejos.size(); i++) {
-            Casilla casilla = (Casilla) verticesViejos.get(i).getInfo();
-            int x = casilla.getX();
-            int y = casilla.getY();
-
-            if (x > 0) reconectar(x, y, x - 1, y);
-            if (x < filas - 1) reconectar(x, y, x + 1, y);
-            if (y > 0) reconectar(x, y, x, y - 1);
-            if (y < columnas - 1) reconectar(x, y, x, y + 1);
-        }
-    }
-
-    private void reconectar(int x1, int y1, int x2, int y2) {
-        int idx1 = encontrarPosicionPorCasilla(x1, y1);
-        int idx2 = encontrarPosicionPorCasilla(x2, y2);
-
-        if (idx1 != -1 && idx2 != -1) {
-            grafo.insertEdgeNDG(idx1, idx2);
-        }
-    }
-
-    private int encontrarPosicionPorCasilla(int x, int y) {
-        for (int i = 0; i < grafo.getVerticesList().size(); i++) {
-            Casilla c = (Casilla) grafo.getVerticesList().get(i).getInfo();
-            if (c.getX() == x && c.getY() == y) return i;
-        }
-        return -1;
     }
 
     private int distanciaManhattan(Casilla a, Casilla b) {
         return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY());
     }
 
+    public void desactivarCasillasAleatoriamente(int porcentaje) {
+        List<Casilla> candidatas = new ArrayList<>();
+        Iterator<Vertex> it = grafo.getVerticesList().iterator();
+        while (it.hasNext()) {
+            WeightedVertex v = (WeightedVertex) it.next();
+            if ((Integer) v.getWeight() != 0) {
+                candidatas.add((Casilla) v.getInfo());
+            }
+        }
+        int totalDesactivar = (candidatas.size() * porcentaje) / 100;
+        Collections.shuffle(candidatas);
+        for (int i = 0; i < totalDesactivar; i++) {
+            candidatas.get(i).setActiva(false);
+        }
+    }
+
+    public WeightedVertex buscarWVertexCoordenadas(int x, int y) {
+        Iterator<Vertex> iter = grafo.getVerticesList().iterator();
+        WeightedVertex v = null;
+        while (iter.hasNext() && v == null) {
+            WeightedVertex aux = (WeightedVertex) iter.next();
+            Casilla c = (Casilla) aux.getInfo();
+            if (c.getX() == x && c.getY() == y) {
+                v = aux;
+            }
+        }
+        return v;
+    }
+
+    public boolean esCasillaActivada(int x, int y) {
+        WeightedVertex v = buscarWVertexCoordenadas(x, y);
+        return v != null && ((Casilla) v.getInfo()).isActiva();
+    }
+
+    public int getFilas() {
+        return filas;
+    }
+
+    public int getColumnas() {
+        return columnas;
+    }
+
+    public void setColumnas(int columnas) {
+        if (columnas > 0)
+            this.columnas = columnas;
+    }
+
+    public void setFilas(int filas) {
+        if (filas > 0)
+            this.filas = filas;
+    }
     public ILinkedWeightedVertexNotDirectedGraph getGrafo() {
         return grafo;
     }
 
-    public boolean coordenadasValidas(int x, int y) {
-        return buscarWVertexCoordenadas(x, y) != null;
+    public Vertex obtenerCasillaAleatoria() {
+        LinkedList<Vertex> vertices = grafo.getVerticesList();
+        return vertices.get((int) (Math.random() * vertices.size()));
     }
-    public WeightedVertex buscarWVertexCoordenadas(int x, int y) {
-        for (Vertex v : grafo.getVerticesList()) {
+
+    public LinkedList<Casilla> obtenerCasillasActivas() {
+        LinkedList<Casilla> casillas = new LinkedList<>();
+        Iterator<Vertex> it = grafo.getVerticesList().iterator();
+
+        while (it.hasNext()) {
+            Vertex v = it.next();
             Casilla casilla = (Casilla) v.getInfo();
-            if (casilla.getX() == x && casilla.getY() == y) {
-                return (WeightedVertex) v;
-            }
+            if (casilla.isActiva())
+                casillas.addLast(casilla);
         }
-        return null;
+        return casillas;
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     public Tablero copy() {
         Tablero copia = new Tablero(this.filas, this.columnas);
         copia.grafo.getVerticesList().clear();
@@ -132,37 +158,6 @@ public class Tablero {
         return copia;
     }
 
-    public boolean esCasillaActivada(int x, int y) {
-        boolean result = false;
-        WeightedVertex v = buscarWVertexCoordenadas(x, y);
-        if (v != null) {
-            result = ((Casilla)v.getInfo()).isActiva();
-
-        }
-        return result;
-    }
-
-    public int getFilas() {
-        return filas;
-    }
-
-    public int getColumnas() {
-        return columnas;
-    }
-
-    public LinkedList<Casilla> obtenerCasillasActivas() {
-        LinkedList<Casilla> casillas = new LinkedList<>();
-        Iterator<Vertex> it = grafo.getVerticesList().iterator();
-
-        while (it.hasNext()) {
-            Vertex v = it.next();
-            Casilla casilla = (Casilla) v.getInfo();
-            if (casilla.isActiva())
-                casillas.addLast(casilla);
-        }
-        return casillas;
-    }
-
     public List<Pair<Integer, Integer>> obtenerParesCasillasActiv() {
         List<Pair<Integer, Integer>> pares = new LinkedList<>();
         Iterator<Casilla> itActivas = this.obtenerCasillasActivas().iterator();
@@ -171,38 +166,5 @@ public class Tablero {
             pares.add(new Pair<>(casilla.getX(), casilla.getY()));
         }
         return pares;
-    }
-
-    public void setColumnas(int columnas) {
-        if (columnas > 0)
-            this.columnas = columnas;
-    }
-
-    public void setFilas(int filas) {
-        if (filas > 0)
-            this.filas = filas;
-    }
-
-    public Vertex obtenerCasillaAleatoria() {
-        LinkedList<Vertex> vertices = grafo.getVerticesList();
-        return vertices.get((int) (Math.random() * vertices.size()));
-    }
-
-    public void desactivarCasillasAleatoriamente(int porcentaje) {
-        List<Casilla> candidatas = new ArrayList<>();
-        Iterator<Vertex> it = grafo.getVerticesList().iterator();
-        while (it.hasNext()) {
-            WeightedVertex v = (WeightedVertex) it.next();
-            if ((Integer) v.getWeight() != 0) {
-                candidatas.add((Casilla) v.getInfo());
-            }
-        }
-        // 2. Calcular número de casillas a desactivar
-        int totalDesactivar = (candidatas.size() * porcentaje) / 100;
-        // 3. Aleatorizar y desactivar
-        Collections.shuffle(candidatas);
-        for (int i = 0; i < totalDesactivar; i++) {
-            candidatas.get(i).setActiva(false);
-        }
     }
 }

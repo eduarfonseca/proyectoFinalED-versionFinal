@@ -2,7 +2,7 @@ package Modelos;
 
 public class Meta extends Casilla {
     public Meta(int x, int y) {
-        super(x, y, true); // La meta siempre está activa
+        super(x, y, true);
     }
 
     @Override

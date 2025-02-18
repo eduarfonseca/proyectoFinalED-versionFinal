@@ -2,8 +2,12 @@ package Modelos;
 
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
+import kotlin.Pair;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Trayectoria {
     private final LinkedList<WeightedVertex> casillas; // Lista de casillas en la trayectoria
@@ -31,5 +35,13 @@ public class Trayectoria {
         }
         return sb.toString();
     }
-
+    public List<Pair<Integer,Integer>> obtenerPairsTrayectoria() {
+        List<Pair<Integer,Integer>> list = new ArrayList<>();
+        Iterator<WeightedVertex> iter = casillas.iterator();
+        while (iter.hasNext()) {
+            WeightedVertex casilla = iter.next();
+            list.add(new Pair<>(((Casilla)casilla.getInfo()).getX(), ((Casilla)casilla.getInfo()).getY()));
+        }
+        return list;
+    }
 }
