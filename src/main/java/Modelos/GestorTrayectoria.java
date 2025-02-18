@@ -1,7 +1,5 @@
 package Modelos;
 
-import cu.edu.cujae.ceis.graph.vertex.Vertex;
-import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
 import kotlin.Pair;
 
 import java.util.ArrayList;
