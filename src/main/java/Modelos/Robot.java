@@ -10,14 +10,14 @@ public class Robot {
     private WeightedVertex posicionActual;
     private final Tablero tablero;
     private WeightedVertex meta;
-    private final Trayectoria gestorTrayectoria;
+    private final GestorTrayectoria gestorTrayectoria;
 
 
     public Robot(Tablero tablero, WeightedVertex meta, WeightedVertex posicionActual) {
         this.tablero = tablero;
         setMeta(meta);
         setPosicionActual(posicionActual);
-        this.gestorTrayectoria = new Trayectoria();
+        this.gestorTrayectoria = new GestorTrayectoria();
     }
 
     public Casilla obtenerMeta() {
