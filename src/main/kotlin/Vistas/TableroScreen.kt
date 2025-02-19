@@ -3,6 +3,7 @@ package Vistas
 import Modelos.Robot
 import Modelos.Tablero
 import ViewModels.AppViewModel
+import ViewModels.TableroViewModel
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,34 +27,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 
 @Composable
-fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
-    var filas by remember { mutableStateOf(tablero.filas) }
-    var columnas by remember { mutableStateOf(tablero.columnas) }
-    var casillasActivas by remember { mutableStateOf(tablero.obtenerParesCasillasActiv()) }
-    var tableroState by remember { mutableStateOf(tablero) }
-    var selectedNumber by remember { mutableStateOf(0) }
-    // Estados para las dos casillas seleccionadas usando la nueva clase
-    var casillaMeta by remember { mutableStateOf<CasillaSeleccionada?>(CasillaSeleccionada(1, Pair(0,1))) }
-    var casillaInicio by remember { mutableStateOf<CasillaSeleccionada?>(CasillaSeleccionada(0, Pair(0,0))) }
-
-    var modoSeleccion by remember { mutableStateOf<String?>(null) }
-
-    // Modificar estos estados para que sean mutables y observables
-    var meta: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[0] as WeightedVertex?) }
-    var inicio: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[1] as WeightedVertex?) }
-    var robotState by remember { mutableStateOf(Robot(tablero, meta, inicio)) }
-    var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
-    val metaState by remember { mutableStateOf(robotState.obtenerMeta()) }
-
-    // Efecto para actualizar la trayectoria cuando cambie el robot
-//    LaunchedEffect(robotState) {
-//        casillasActivas = tableroState.obtenerParesCasillasActiv()
-//        posicionRobotState = robotState.posicionActual
-//        trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
-//        tableroState = Tablero(filas,columnas)
-//        robotState.setPosicionActual(tablero.grafo.verticesList[casillaInicio?.numero!!] as WeightedVertex)
-//        meta = tableroState.grafo.verticesList[casillaMeta?.numero!!] as WeightedVertex?
-//    }
+fun TableroScreen(
+    viewModel: TableroViewModel = viewModel()
+) {
+    val state by viewModel.state.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -77,11 +54,9 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = {
-                        modoSeleccion = if (modoSeleccion == "meta") null else "meta"
-                    },
+                    onClick = { viewModel.setModoSeleccion("meta") },
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (modoSeleccion == "meta") Color(0xFF4CAF50) else Color(0xFF1E88E5)
+                        backgroundColor = if (state.modoSeleccion == "meta") Color(0xFF4CAF50) else Color(0xFF1E88E5)
                     )
                 ) {
                     Text(
@@ -91,11 +66,9 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                 }
 
                 Button(
-                    onClick = {
-                        modoSeleccion = if (modoSeleccion == "inicio") null else "inicio"
-                    },
+                    onClick = { viewModel.setModoSeleccion("inicio") },
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (modoSeleccion == "inicio") Color(0xFF4CAF50) else Color(0xFF1E88E5)
+                        backgroundColor = if (state.modoSeleccion == "inicio") Color(0xFF4CAF50) else Color(0xFF1E88E5)
                     )
                 ) {
                     Text(
@@ -105,7 +78,6 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                 }
             }
 
-
             // Mostrar información de las casillas seleccionadas
             Column(
                 modifier = Modifier
@@ -113,7 +85,7 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                casillaMeta?.let { casilla ->
+                state.casillaMeta?.let { casilla ->
                     Text(
                         text = "meta casilla - Número: ${casilla.numero}, Coordenadas: (${casilla.coordenadas.first},${casilla.coordenadas.second})",
                         style = MaterialTheme.typography.overline,
@@ -121,7 +93,7 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                         fontSize = 14.sp
                     )
                 }
-                casillaInicio?.let { casilla ->
+                state.casillaInicio?.let { casilla ->
                     Text(
                         text = "inicio casilla - Número: ${casilla.numero}, Coordenadas: (${casilla.coordenadas.first},${casilla.coordenadas.second})",
                         style = MaterialTheme.typography.overline,
@@ -149,25 +121,18 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                         fontSize = 14.sp,
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    var rows by remember { mutableStateOf(filas) }
-                    var columns by remember { mutableStateOf(columnas) }
+                    var rows by remember { mutableStateOf(state.filas) }
+                    var columns by remember { mutableStateOf(state.columnas) }
 
                     MatrixSizePicker(
                         rows = rows,
                         columns = columns,
                         onRowChange = { rows = it },
-                        onColumnChange = { columns = it },
-//                        modifier = Modifier.fillMaxHeight(0.3f).fillMaxWidth(0.3f)
+                        onColumnChange = { columns = it }
                     )
 
                     Button(
-                        onClick = {
-                            filas = rows
-                            columnas = columns
-                            tableroState = Tablero(filas, columnas)
-                            tableroState.actualizarPesos(metaState, selectedNumber) // Utilizar selectedNumber
-                            casillasActivas = tableroState.obtenerParesCasillasActiv()
-                        },
+                        onClick = { viewModel.actualizarDimensionesTablero(rows, columns) },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
@@ -191,8 +156,8 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     NumberPicker(
-                        value = selectedNumber,
-                        onValueChange = { selectedNumber = it },
+                        value = state.selectedNumber,
+                        onValueChange = { viewModel.setSelectedNumber(it) },
                         increment = 1,
                         minValue = 1,
                         maxValue = 100,
@@ -200,10 +165,7 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                     )
 
                     Button(
-                        onClick = {
-                            tableroState.desactivarCasillasAleatoriamente(selectedNumber)
-                            casillasActivas = tableroState.obtenerParesCasillasActiv() // Actualizar casillas activas
-                        },
+                        onClick = { viewModel.desactivarCasillasAleatorias() },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
@@ -225,7 +187,7 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Matriz de tamaño: ${tableroState.filas} x ${tableroState.columnas}",
+                    text = "Matriz de tamaño: ${state.filas} x ${state.columnas}",
                     style = MaterialTheme.typography.overline,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -233,24 +195,24 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                     textAlign = TextAlign.Center,
                 )
 
-                repeat(filas) { fila ->
+                repeat(state.filas) { fila ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        repeat(columnas) { columna ->
+                        repeat(state.columnas) { columna ->
                             val posicionActual = Pair(fila, columna)
-                            val trayectoria = trayectoriaState
+                            val trayectoria = state.trayectoria
 
-                            if (casillasActivas != null) {
+                            state.casillasActivas?.let { casillasActivas ->
                                 Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .padding(2.dp)
                                         .background(
                                             when {
-                                                casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
-                                                casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
+                                                state.casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
+                                                state.casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
                                                 posicionActual in trayectoria -> Color(237, 195, 107)
                                                 posicionActual in casillasActivas -> Color(88, 157, 93)
                                                 else -> Color.Gray
@@ -258,23 +220,13 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                         .clickable(
-                                            enabled = modoSeleccion != null
+                                            enabled = state.modoSeleccion != null
                                         ) {
-                                            val casillaSeleccionada = crearCasillaSeleccionada(fila, columnas, columna)
-                                            when (modoSeleccion) {
-                                                "meta" -> {
-                                                    casillaMeta = casillaSeleccionada
-                                                    modoSeleccion = null
-                                                    meta = tableroState.grafo.verticesList[casillaSeleccionada.numero] as WeightedVertex?
-                                                }
-
-                                                "inicio" -> {
-                                                    casillaInicio = casillaSeleccionada
-                                                    modoSeleccion = null
-                                                    inicio = tableroState.grafo.verticesList[casillaSeleccionada.numero] as WeightedVertex?
-
-                                                }
-                                            }
+                                            val casillaSeleccionada = CasillaSeleccionada(
+                                                numero = fila * state.columnas + columna,
+                                                coordenadas = Pair(fila, columna)
+                                            )
+                                            viewModel.seleccionarCasilla(casillaSeleccionada)
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -291,14 +243,8 @@ fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
             }
 
             Button(
-                onClick = {
-                    robotState = Robot(tableroState,meta, inicio)
-//                    robotState.mover()
-//                    trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    Color(255, 0, 51)
-                )
+                onClick = { viewModel.iniciarSimulacion() },
+                colors = ButtonDefaults.buttonColors(Color(255, 0, 51))
             ) {
                 Text(
                     text = "Iniciar simulacion",

@@ -43,22 +43,6 @@ fun sideBar(selectedItem: String, onItemSelected: (String) -> Unit) {
 
         sideBarMenuItem("Inicio", Icons.Default.Home, selectedItem, onItemSelected)
 
-//        SideBarMenuGroup("Gestión", Icons.Default.Business, expandedMenu) {
-//            expandedMenu = if (expandedMenu == "Gestión") "" else "Gestión"
-//        }
-//        if (expandedMenu == "Gestión") {
-//            SideBarSubMenuItem("Hospitales", selectedItem, onItemSelected)
-//            SideBarSubMenuItem("Departamentos", selectedItem, onItemSelected)
-//            SideBarSubMenuItem("Unidades", selectedItem, onItemSelected)
-//        }
-//
-//        SideBarMenuGroup("Personal", Icons.Default.People, expandedMenu) {
-//            expandedMenu = if (expandedMenu == "Personal") "" else "Personal"
-//        }
-//        if (expandedMenu == "Personal") {
-//            SideBarSubMenuItem("Médicos", selectedItem, onItemSelected)
-//            SideBarSubMenuItem("Pacientes", selectedItem, onItemSelected)
-//        }
 
         sideBarMenuItem("Tablero", Icons.Default.EventNote, selectedItem, onItemSelected)
 
@@ -73,7 +57,6 @@ fun sideBar(selectedItem: String, onItemSelected: (String) -> Unit) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-//        SideBarMenuItem("Búsqueda", Icons.Default.Search, selectedItem, onItemSelected)
         sideBarMenuItem("Salir", Icons.AutoMirrored.Filled.Logout, selectedItem, onItemSelected)
 
     }

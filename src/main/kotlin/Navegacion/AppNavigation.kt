@@ -1,7 +1,7 @@
 package Navegacion
 
-import Modelos.Tablero
 import ViewModels.AppViewModel
+import ViewModels.TableroViewModel
 import Vistas.Componentes.ReporteScreen
 import Vistas.Componentes.sideBar
 import Vistas.InicioScreen
@@ -18,22 +18,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHost
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 
 @Composable
 fun AppNavigation(
-    tablero: Tablero,
     modifier: Modifier = Modifier,
     appViewModel: AppViewModel = viewModel()
 ) {
+    val tableroViewModel: TableroViewModel = viewModel()
     val navController = rememberNavController()
     val currentScreen by appViewModel.currentScreen.collectAsState()
 
@@ -68,11 +63,11 @@ fun AppNavigation(
                     .padding(16.dp)
             ) {
                 composable(Screen.Inicio.route) {
-                    InicioScreen()
+                    InicioScreen(appViewModel)
                 }
 
                 composable(Screen.Tablero.route) {
-                    TableroScreen(tablero = tablero)
+                    TableroScreen(tableroViewModel)
                 }
 
                 composable(Screen.Reportes.route) {

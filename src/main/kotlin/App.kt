@@ -51,19 +51,10 @@ import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 
 @Composable
 fun App() {
-    val appViewModel: AppViewModel = viewModel()
-
-    // Crear un tablero de 5x5
-    val tablero = Tablero(10, 10)
-    val meta = tablero.grafo.verticesList[8] as WeightedVertex
-    val inicio = tablero.grafo.verticesList[1] as WeightedVertex
-    tablero.actualizarPesos(meta.info as Casilla, 20)
-
-    val robot by remember { mutableStateOf(Robot(tablero, meta, inicio)) }
+    val viewModel: AppViewModel = viewModel()
 
     AppNavigation(
-        tablero = tablero,
-        appViewModel = appViewModel,
+        appViewModel = viewModel,
         modifier = Modifier.fillMaxSize()
     )
 }
