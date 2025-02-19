@@ -26,7 +26,10 @@ fun App() {
     tablero.actualizarPesos(meta.info as Casilla, 20 )
 
     val robot = Robot(tablero, meta, inicio)
-    robot.mover()
+    robot.moverse()
+
+
+
 
     var selectedItem by remember { mutableStateOf("Inicio") }
 

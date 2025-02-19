@@ -40,7 +40,7 @@ fun TableroScreen(tablero: Tablero) {
     var meta: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[0] as WeightedVertex?) }
     var inicio: WeightedVertex? by remember { mutableStateOf(tablero.grafo.verticesList[1] as WeightedVertex?) }
     var robotState by remember { mutableStateOf(Robot(tablero, meta, inicio)) }
-    var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
+    //var trayectoriaState by remember { mutableStateOf(robotState.gestorTrayectoria.obtenerPairsTrayectoria()) }
     val metaState by remember { mutableStateOf(robotState.obtenerMeta()) }
 
     // Efecto para actualizar la trayectoria cuando cambie el robot
@@ -238,7 +238,7 @@ fun TableroScreen(tablero: Tablero) {
                     ) {
                         repeat(columnas) { columna ->
                             val posicionActual = Pair(fila, columna)
-                            val trayectoria = trayectoriaState
+                            //val trayectoria = trayectoriaState
 
                             if (casillasActivas != null) {
                                 Box(
@@ -249,7 +249,7 @@ fun TableroScreen(tablero: Tablero) {
                                             when {
                                                 casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
                                                 casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
-                                                posicionActual in trayectoria -> Color(237, 195, 107)
+                                                //posicionActual in trayectoria -> Color(237, 195, 107)
                                                 posicionActual in casillasActivas -> Color(88, 157, 93)
                                                 else -> Color.Gray
                                             },
@@ -291,7 +291,7 @@ fun TableroScreen(tablero: Tablero) {
             Button(
                 onClick = {
                     robotState = Robot(tableroState,meta, inicio)
-                    robotState.mover()
+                    robotState.moverse()
 //                    trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
                 },
                 colors = ButtonDefaults.buttonColors(

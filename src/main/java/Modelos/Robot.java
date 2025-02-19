@@ -12,6 +12,7 @@ public class Robot {
     private WeightedVertex meta;
     private final GestorTrayectoria gestorTrayectoria;
 
+    public GestorTrayectoria getGestorTrayectoria() {return gestorTrayectoria;}
 
     public Robot(Tablero tablero, WeightedVertex meta, WeightedVertex posicionActual) {
         this.tablero = tablero;
@@ -79,7 +80,7 @@ public class Robot {
             WeightedVertex aux = mejorMovimiento(actual);
             if(!aux.getInfo().equals(actual.getInfo())){
                 String direccion = determinarDireccion((Casilla) aux.getInfo(),(Casilla) actual.getInfo());
-                //  Crear la trayectoria con la direccion
+                gestorTrayectoria.getTrayectoria().add(new Trayectoria(aux, direccion));
                 actual = aux;
                 cantPasos++;
             }else {
@@ -87,6 +88,19 @@ public class Robot {
                 find = false;
             }
         }
+        // probando
+       Casilla m = (Casilla)meta.getInfo();
+        Casilla init = (Casilla)posicionActual.getInfo();
+       System.out.println("init" + init.getX() + " " + init.getY());
+       System.out.println("meta " + m.getX() + " " + m.getY());
+
+        for(int i = 0 ; i < gestorTrayectoria.getTrayectoria().size() ; i++){
+            Trayectoria t = gestorTrayectoria.getTrayectoria().get(i);
+            Casilla c = (Casilla)t.getCasilla().getInfo();
+            String dir = t.getDireccion();
+            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  Direccion: " + dir);
+        }
+
    }
 
    public String determinarDireccion (Casilla nueva , Casilla vieja){
