@@ -28,6 +28,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier,
     appViewModel: AppViewModel = viewModel()
 ) {
+    // Creamos una única instancia de TableroViewModel para compartir entre pantallas
     val tableroViewModel: TableroViewModel = viewModel()
     val navController = rememberNavController()
     val currentScreen by appViewModel.currentScreen.collectAsState()
@@ -71,7 +72,7 @@ fun AppNavigation(
                 }
 
                 composable(Screen.Reportes.route) {
-                    ReporteScreen()
+                    ReporteScreen(tableroViewModel)
                 }
             }
         }

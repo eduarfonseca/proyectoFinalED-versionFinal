@@ -64,7 +64,7 @@ public class Tablero {
         Iterator<Vertex> it = grafo.getVerticesList().iterator();
         while (it.hasNext()) {
             WeightedVertex v = (WeightedVertex) it.next();
-            if ((Integer) v.getWeight() != 0) {
+            if (((Heuristica) v.getWeight()).getDistancia() != 0) {
                 candidatas.add((Casilla) v.getInfo());
             }
         }

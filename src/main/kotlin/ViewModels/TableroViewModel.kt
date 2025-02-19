@@ -4,7 +4,7 @@ import Modelos.Casilla
 import Modelos.Robot
 import Modelos.Tablero
 import Modelos.TableroState
-import Vistas.CasillaSeleccionada
+import Modelos.CasillaSeleccionada
 import androidx.lifecycle.ViewModel
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -90,6 +90,7 @@ class TableroViewModel : ViewModel() {
     }
 
     fun iniciarSimulacion() {
+
         actualizarRobot()
         // Aquí puedes añadir la lógica adicional para la simulación
     }

@@ -1,8 +1,6 @@
 package Vistas
 
-import Modelos.Robot
-import Modelos.Tablero
-import ViewModels.AppViewModel
+import Modelos.CasillaSeleccionada
 import ViewModels.TableroViewModel
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
@@ -24,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
+
 
 @Composable
 fun TableroScreen(
@@ -267,10 +265,3 @@ fun crearCasillaSeleccionada(fila: Int, columnas: Int, columna: Int): CasillaSel
         coordenadas = Pair(fila, columna)
     )
 }
-
-// Clase para representar una casilla seleccionada
-data class CasillaSeleccionada(
-    val numero: Int,
-    val coordenadas: Pair<Int, Int>
-)
-

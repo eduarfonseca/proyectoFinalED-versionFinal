@@ -11,13 +11,10 @@ class NavigationActions(
     fun navigateTo(screen: Screen) {
         viewModel.navigateTo(screen)
         navController.navigate(screen.route) {
-            navController.graph.startDestinationRoute?.let {
-                popUpTo(it) {
-                    saveState = true
-                }
+            popUpTo(Screen.Inicio.route) {
+                inclusive = true
             }
             launchSingleTop = true
-            restoreState = true
         }
     }
 }

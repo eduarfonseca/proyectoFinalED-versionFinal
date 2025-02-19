@@ -3,6 +3,7 @@ package ViewModels
 import Navegacion.Screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,7 @@ class AppViewModel : ViewModel() {
     val currentScreen: StateFlow<Screen> = _currentScreen.asStateFlow()
 
     fun navigateTo(screen: Screen) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main.immediate) {  // Usar Main.immediate para Desktop
             _currentScreen.value = screen
         }
     }
