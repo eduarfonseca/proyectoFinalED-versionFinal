@@ -6,10 +6,14 @@ import Modelos.Tablero
 import Modelos.TableroState
 import Modelos.CasillaSeleccionada
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 
 class TableroViewModel : ViewModel() {
@@ -90,9 +94,17 @@ class TableroViewModel : ViewModel() {
     }
 
     fun iniciarSimulacion() {
-
         actualizarRobot()
-        // Aquí puedes añadir la lógica adicional para la simulación
+        viewModelScope.launch(Dispatchers.Main.immediate) {
+            _state.value.robot?.let { robot ->
+                // Llamar al método moverse del robot
+                robot.moverse()
+                // Actualizar la trayectoria después del movimiento
+                _state.value = _state.value.copy(
+                    trayectoria = robot.gestorTrayectoria.obtenerPairsTrayectoria()
+                )
+            }
+        }
     }
 
     private fun actualizarRobot() {
