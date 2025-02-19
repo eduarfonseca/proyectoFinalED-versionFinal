@@ -53,6 +53,13 @@ public class Tablero {
             ((Heuristica)vertex.getWeight()).setDistancia(distancia);
         }
         desactivarCasillasAleatoriamente(porcentajeInactivas);
+
+        for (int i = 0 ;  i < grafo.getVerticesList().size() ; i ++ ){
+            WeightedVertex vertex = (WeightedVertex) grafo.getVerticesList().get(i);
+            Heuristica h = (Heuristica) vertex.getWeight();
+            Casilla c = (Casilla) vertex.getInfo();
+            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  peso " + h.getDistancia());
+        }
     }
 
     private int distanciaManhattan(Casilla a, Casilla b) {
