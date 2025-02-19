@@ -1,6 +1,7 @@
 package Vistas
 
 import Modelos.CasillaSeleccionada
+import Modelos.Heuristica
 import ViewModels.TableroViewModel
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
@@ -199,6 +200,7 @@ fun TableroScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         repeat(state.columnas) { columna ->
+                            val peso = (state.tablero?.buscarWVertexCoordenadas(fila, columna)?.weight as Heuristica).distancia
                             val posicionActual = Pair(fila, columna)
                             val trayectoria = state.trayectoria
 
@@ -209,8 +211,8 @@ fun TableroScreen(
                                         .padding(2.dp)
                                         .background(
                                             when {
-                                                state.casillaMeta?.coordenadas == posicionActual -> Color(199, 78, 78)
-                                                state.casillaInicio?.coordenadas == posicionActual -> Color(154, 105, 214)
+                                                state.casillaMeta.coordenadas == posicionActual -> Color(199, 78, 78)
+                                                state.casillaInicio.coordenadas == posicionActual -> Color(154, 105, 214)
                                                 posicionActual in trayectoria -> Color(237, 195, 107)
                                                 posicionActual in casillasActivas -> Color(88, 157, 93)
                                                 else -> Color.Gray
@@ -229,7 +231,7 @@ fun TableroScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "${fila},${columna}",
+                                        text = "$peso",
                                         fontSize = 10.sp,
                                         color = Color.White
                                     )

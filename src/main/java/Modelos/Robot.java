@@ -18,6 +18,7 @@ public class Robot {
         setMeta(meta);
         setPosicionActual(posicionActual);
         this.gestorTrayectoria = new GestorTrayectoria();
+        gestorTrayectoria.agregarTrayectoria(new Trayectoria(posicionActual,"Inicio"));
     }
 
     public Casilla obtenerMeta() {

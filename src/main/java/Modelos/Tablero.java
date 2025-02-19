@@ -58,7 +58,7 @@ public class Tablero {
             WeightedVertex vertex = (WeightedVertex) grafo.getVerticesList().get(i);
             Heuristica h = (Heuristica) vertex.getWeight();
             Casilla c = (Casilla) vertex.getInfo();
-            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  peso " + h.getDistancia());
+//            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  peso " + h.getDistancia());
         }
     }
 
