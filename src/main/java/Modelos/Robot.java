@@ -4,7 +4,6 @@ import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class Robot {
     private WeightedVertex posicionActual;
@@ -117,9 +116,6 @@ public class Robot {
         return direccion;
    }
 
-    public GestorTrayectoria getGestorTrayectoria() {
-       return gestorTrayectoria;
-    }
 }
 
 
