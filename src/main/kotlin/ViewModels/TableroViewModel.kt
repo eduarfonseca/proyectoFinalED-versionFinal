@@ -98,8 +98,8 @@ class TableroViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.Main.immediate) {
             _state.value.robot?.let { robot ->
                 // Llamar al método moverse del robot
-                println("Inicio:" + state.value.robot?.obtenerPosicionActual()?.info.toString())
-                println("Meta:" + state.value.robot?.obtenerMeta().toString())
+//                println("Inicio:" + state.value.robot?.obtenerPosicionActual()?.info.toString())
+//                println("Meta:" + state.value.robot?.obtenerMeta().toString())
                 robot.moverse()
                 // Actualizar la trayectoria después del movimiento
                 _state.value = _state.value.copy(

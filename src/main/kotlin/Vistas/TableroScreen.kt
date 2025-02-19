@@ -2,6 +2,7 @@ package Vistas
 
 import Modelos.CasillaSeleccionada
 import Modelos.Heuristica
+import ViewModels.ReportesViewModel
 import ViewModels.TableroViewModel
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
@@ -27,9 +28,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun TableroScreen(
-    viewModel: TableroViewModel = viewModel()
+    viewModelTablero: TableroViewModel = viewModel(),
+    viewModelReportes: ReportesViewModel = viewModel()
+
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModelTablero.state.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -53,7 +56,7 @@ fun TableroScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { viewModel.setModoSeleccion("meta") },
+                    onClick = { viewModelTablero.setModoSeleccion("meta") },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (state.modoSeleccion == "meta") Color(0xFF4CAF50) else Color(0xFF1E88E5)
                     )
@@ -65,7 +68,7 @@ fun TableroScreen(
                 }
 
                 Button(
-                    onClick = { viewModel.setModoSeleccion("inicio") },
+                    onClick = { viewModelTablero.setModoSeleccion("inicio") },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (state.modoSeleccion == "inicio") Color(0xFF4CAF50) else Color(0xFF1E88E5)
                     )
@@ -131,7 +134,7 @@ fun TableroScreen(
                     )
 
                     Button(
-                        onClick = { viewModel.actualizarDimensionesTablero(rows, columns) },
+                        onClick = { viewModelTablero.actualizarDimensionesTablero(rows, columns) },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
@@ -156,7 +159,7 @@ fun TableroScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     NumberPicker(
                         value = state.selectedNumber,
-                        onValueChange = { viewModel.setSelectedNumber(it) },
+                        onValueChange = { viewModelTablero.setSelectedNumber(it) },
                         increment = 1,
                         minValue = 1,
                         maxValue = 100,
@@ -164,7 +167,7 @@ fun TableroScreen(
                     )
 
                     Button(
-                        onClick = { viewModel.desactivarCasillasAleatorias() },
+                        onClick = { viewModelTablero.desactivarCasillasAleatorias() },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
@@ -200,7 +203,8 @@ fun TableroScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         repeat(state.columnas) { columna ->
-                            val peso = (state.tablero?.buscarWVertexCoordenadas(fila, columna)?.weight as Heuristica).distancia
+                            val peso =
+                                (state.tablero?.buscarWVertexCoordenadas(fila, columna)?.weight as Heuristica).distancia
                             val posicionActual = Pair(fila, columna)
                             val trayectoria = state.trayectoria
 
@@ -212,7 +216,12 @@ fun TableroScreen(
                                         .background(
                                             when {
                                                 state.casillaMeta.coordenadas == posicionActual -> Color(199, 78, 78)
-                                                state.casillaInicio.coordenadas == posicionActual -> Color(154, 105, 214)
+                                                state.casillaInicio.coordenadas == posicionActual -> Color(
+                                                    154,
+                                                    105,
+                                                    214
+                                                )
+
                                                 posicionActual in trayectoria -> Color(237, 195, 107)
                                                 posicionActual in casillasActivas -> Color(88, 157, 93)
                                                 else -> Color.Gray
@@ -226,7 +235,7 @@ fun TableroScreen(
                                                 numero = fila * state.columnas + columna,
                                                 coordenadas = Pair(fila, columna)
                                             )
-                                            viewModel.seleccionarCasilla(casillaSeleccionada)
+                                            viewModelTablero.seleccionarCasilla(casillaSeleccionada)
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -243,7 +252,10 @@ fun TableroScreen(
             }
 
             Button(
-                onClick = { viewModel.iniciarSimulacion() },
+                onClick = {
+                    viewModelTablero.iniciarSimulacion()
+                    viewModelTablero.state.value.robot?.let { viewModelReportes.addRobot(it) }
+                },
                 colors = ButtonDefaults.buttonColors(Color(255, 0, 51))
             ) {
                 Text(

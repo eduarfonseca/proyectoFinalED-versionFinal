@@ -1,6 +1,7 @@
 package Navegacion
 
 import ViewModels.AppViewModel
+import ViewModels.ReportesViewModel
 import ViewModels.TableroViewModel
 import Vistas.ReporteScreen
 import Vistas.Componentes.sideBar
@@ -32,6 +33,7 @@ fun AppNavigation(
     val tableroViewModel: TableroViewModel = viewModel()
     val navController = rememberNavController()
     val currentScreen by appViewModel.currentScreen.collectAsState()
+    val reportesViewModel: ReportesViewModel = viewModel()
 
     val navigationActions = remember(navController, appViewModel) {
         NavigationActions(navController, appViewModel)
@@ -68,11 +70,11 @@ fun AppNavigation(
                 }
 
                 composable(Screen.Tablero.route) {
-                    TableroScreen(tableroViewModel)
+                    TableroScreen(tableroViewModel,reportesViewModel )
                 }
 
                 composable(Screen.Reportes.route) {
-                    ReporteScreen(tableroViewModel)
+                    ReporteScreen(reportesViewModel)
                 }
             }
         }

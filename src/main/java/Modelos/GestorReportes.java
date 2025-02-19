@@ -6,15 +6,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class GestorReportes {
-    Robot robot;
     File ficheroTrayectoria;
 
-    public GestorReportes(Robot robot) {
-        this.robot = robot;
+    public GestorReportes() {
         ficheroTrayectoria = new File("reporte.DAT", "rw");
     }
 
-    public void crearReporteTrayectoria() throws IOException {
+    public void crearReporteTrayectoria(Robot robot) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(ficheroTrayectoria, "rw");
         raf.seek(raf.length());
         int sizeTrayectoria = robot.getGestorTrayectoria().getTrayectoria().size();

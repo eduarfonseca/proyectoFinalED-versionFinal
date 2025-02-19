@@ -47,13 +47,14 @@ fun sideBar(selectedItem: String, onItemSelected: (String) -> Unit) {
         sideBarMenuItem("Tablero", Icons.Default.EventNote, selectedItem, onItemSelected)
 
 
-        sideBarMenuGroup("Reportes", Icons.Default.Assessment, expandedMenu) {
-            expandedMenu = if (expandedMenu == "Reportes") "" else "Reportes"
-        }
-        if (expandedMenu == "Reportes") {
-            sideBarSubMenuItem("Reporte 1", selectedItem, onItemSelected)
-            sideBarSubMenuItem("Reporte 2", selectedItem, onItemSelected)
-        }
+        sideBarMenuItem("Reportes", Icons.Default.Assessment, selectedItem, onItemSelected)
+//        sideBarMenuGroup("Reportes", Icons.Default.Assessment, expandedMenu) {
+//            expandedMenu = if (expandedMenu == "Reportes") "" else "Reportes"
+//        }
+//        if (expandedMenu == "Reportes") {
+//            sideBarSubMenuItem("Reporte 1", selectedItem, onItemSelected)
+//            sideBarSubMenuItem("Reporte 2", selectedItem, onItemSelected)
+//        }
 
         Spacer(modifier = Modifier.weight(1f))
 
