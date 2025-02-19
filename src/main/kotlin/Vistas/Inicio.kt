@@ -56,19 +56,19 @@ fun InicioScreen(viewModel: AppViewModel = viewModel()) {
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Botón para comenzar
-        Button(
-            onClick = { viewModel.navigateTo(Screen.Tablero) },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Comenzar",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.White
-            )
-        }
+//        // Botón para comenzar
+//        Button(
+//            onClick = { viewModel.navigateTo(Screen.Tablero) },
+//            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
+//            modifier = Modifier.padding(top = 16.dp)
+//        ) {
+//            Text(
+//                text = "Comenzar",
+//                fontSize = 18.sp,
+//                fontWeight = FontWeight.Medium,
+//                color = Color.White
+//            )
+//        }
     }
 }
 

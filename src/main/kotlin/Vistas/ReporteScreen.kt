@@ -1,4 +1,4 @@
-package Vistas.Componentes
+package Vistas
 
 import ViewModels.TableroViewModel
 import androidx.compose.runtime.Composable

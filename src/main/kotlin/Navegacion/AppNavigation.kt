@@ -2,7 +2,7 @@ package Navegacion
 
 import ViewModels.AppViewModel
 import ViewModels.TableroViewModel
-import Vistas.Componentes.ReporteScreen
+import Vistas.ReporteScreen
 import Vistas.Componentes.sideBar
 import Vistas.InicioScreen
 import Vistas.TableroScreen
