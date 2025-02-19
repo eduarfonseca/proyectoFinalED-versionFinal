@@ -2,6 +2,8 @@ package Vistas
 
 import Modelos.Robot
 import Modelos.Tablero
+import Navegacion.Screen
+import ViewModels.AppViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
-fun InicioScreen() {
+fun InicioScreen(viewModel: AppViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +58,7 @@ fun InicioScreen() {
 
         // Botón para comenzar
         Button(
-            onClick = {},
+            onClick = { viewModel.navigateTo(Screen.Tablero) },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1E88E5)),
             modifier = Modifier.padding(top = 16.dp)
         ) {

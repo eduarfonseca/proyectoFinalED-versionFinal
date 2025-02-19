@@ -102,6 +102,10 @@ public class Robot {
         }
         return direccion;
    }
+
+    public GestorTrayectoria getGestorTrayectoria() {
+       return gestorTrayectoria;
+    }
 }
 
 

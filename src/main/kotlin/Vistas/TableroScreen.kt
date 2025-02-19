@@ -2,6 +2,7 @@ package Vistas
 
 import Modelos.Robot
 import Modelos.Tablero
+import ViewModels.AppViewModel
 import Vistas.Componentes.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,10 +22,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex
 
 @Composable
-fun TableroScreen(tablero: Tablero) {
+fun TableroScreen(tablero: Tablero, viewModel: AppViewModel = viewModel()) {
     var filas by remember { mutableStateOf(tablero.filas) }
     var columnas by remember { mutableStateOf(tablero.columnas) }
     var casillasActivas by remember { mutableStateOf(tablero.obtenerParesCasillasActiv()) }
@@ -291,7 +293,7 @@ fun TableroScreen(tablero: Tablero) {
             Button(
                 onClick = {
                     robotState = Robot(tableroState,meta, inicio)
-                    robotState.mover()
+//                    robotState.mover()
 //                    trayectoriaState = robotState.gestorTrayectoria.obtenerPairsTrayectoria()
                 },
                 colors = ButtonDefaults.buttonColors(

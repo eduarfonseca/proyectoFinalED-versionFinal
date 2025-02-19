@@ -24,6 +24,7 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(compose.material3)
     implementation(files("libs/LinkedGraph_1.0.jar"))
+    implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
 }
 
 compose.desktop {
