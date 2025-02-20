@@ -65,9 +65,7 @@ public class Robot implements Comparable<Robot> {
    }
 
    public int pesoDelUltimoPaso (){
-       int pos = this.gestorTrayectoria.getTrayectoria().size();
-       WeightedVertex casilla = this.gestorTrayectoria.getTrayectoria().getLast().getCasilla();
-       int peso = ((Heuristica)casilla.getWeight()).getDistancia();
+       int peso = this.gestorTrayectoria.getTrayectoria().getLast().getDistancia();
        return peso;
    }
 

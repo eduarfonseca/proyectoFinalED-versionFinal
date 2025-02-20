@@ -254,10 +254,10 @@ fun TableroScreen(
             Button(
                 onClick = {
                     viewModelTablero.iniciarSimulacion()
-                    println(
-                        "La meta del robot seleccionado es:" + state.robot?.obtenerMeta()
-                            .toString() + "con peso: " + (state.robot?.meta?.weight as Heuristica).distancia
-                    )
+//                    println(
+//                        "La meta del robot seleccionado es:" + state.robot?.obtenerMeta()
+//                            .toString() + "con peso: " + (state.robot?.meta?.weight as Heuristica).distancia
+//                    )
                     viewModelTablero.state.value.robot?.let { viewModelReportes.addRobot(it) }
                 },
                 colors = ButtonDefaults.buttonColors(Color(255, 0, 51))

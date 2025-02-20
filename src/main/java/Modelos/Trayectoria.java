@@ -9,6 +9,7 @@ import java.util.*;
 public class Trayectoria {
     private WeightedVertex casilla;
     private String direccion;
+    private int distancia;
 
     public WeightedVertex getCasilla() {
         return casilla;
@@ -29,5 +30,9 @@ public class Trayectoria {
     public Trayectoria(WeightedVertex casilla, String direccion) {
         this.casilla = casilla;
         this.direccion = direccion;
+        this.distancia = ((Heuristica)casilla.getWeight()).getDistancia();
+    }
+    public int getDistancia() {
+        return distancia;
     }
 }

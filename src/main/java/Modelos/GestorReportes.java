@@ -56,7 +56,7 @@ public class GestorReportes {
             throw new IllegalStateException("No hay datos para guardar");
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel2))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel2), ';', CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
             // Escribir la cabecera
             String[] encabezado = {"Casilla Inicio", "Casilla Meta", "Cantidad de Pasos", "Fecha"};
             writer.writeNext(encabezado);
@@ -85,7 +85,7 @@ public class GestorReportes {
             throw new IllegalStateException("No hay datos para guardar");
         }
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel3))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel3), ';', CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
             // Escribir la cabecera
             String[] encabezado = {"Casilla Inicio", "Casilla Meta", "Distancia Faltante", "Fecha"};
             writer.writeNext(encabezado);
@@ -123,35 +123,6 @@ public class GestorReportes {
         return metas;
     }
 
-    /*public void registrarMetasAlcanzadas(LinkedList<Robot> robots) throws IOException {
-        System.out.println("la lista de robots al llamar a la funcion tiene tamanno -> " + robots.size());
-        LinkedList<Robot> listos = metasAlcanzadas(robots);
-        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno -> " + listos.size());
-        Iterator<Robot> it = listos.iterator();
-        RandomAccessFile raf = new RandomAccessFile(reporte2, "rw");
-        if (!listos.isEmpty()) {
-            while (it.hasNext()) {
-                Robot robot = it.next();
-                // CASILLA DE INICIO
-                byte[] casillaInicio = Convert.toBytes((Casilla)robot.obtenerPosicionActual().getInfo());
-                raf.writeInt(casillaInicio.length);
-                raf.write(casillaInicio);
-                //CASILLA META
-                byte[] casillaMeta = Convert.toBytes(robot.obtenerMeta());
-                raf.writeInt(casillaMeta.length);
-                raf.write(casillaMeta);
-                //Cantidad de Pasos
-                raf.writeInt(robot.getGestorTrayectoria().getTrayectoria().size());
-                // LA FECHA
-                byte[] fecha = Convert.toBytes(robot.getGestorTrayectoria().getFecha());
-                raf.writeInt(fecha.length);
-                raf.write(fecha);
-                raf.close();
-            }
-        } else
-            throw new IllegalStateException("No hay datos para guardar");
-    }*/
-
     public LinkedList<Robot> metasNoAlcanzadas(LinkedList<Robot> robots) {
         LinkedList<Robot> metasNoAlcanzadas = new LinkedList<>();
         for (Robot robot : robots) {
@@ -164,34 +135,6 @@ public class GestorReportes {
         metasNoAlcanzadas.sort(Comparator.comparingInt(r -> r.pesoDelUltimoPaso()));
         return metasNoAlcanzadas;
     }
-
-    /*public void registrarMetasNoAlcanzadas(LinkedList<Robot> robots) throws IOException {
-        LinkedList<Robot> listos = metasNoAlcanzadas(robots);
-        Iterator<Robot> it = listos.iterator();
-        RandomAccessFile raf = new RandomAccessFile(reporte3, "rw");
-        if (!listos.isEmpty()) {
-            while (it.hasNext()) {
-                Robot robot = it.next();
-                // CASILLA DE INICIO
-                byte[] casillaInicio = Convert.toBytes((Casilla)robot.obtenerPosicionActual().getInfo());
-                raf.writeInt(casillaInicio.length);
-                raf.write(casillaInicio);
-                //CASILLA META
-                byte[] casillaMeta = Convert.toBytes(robot.obtenerMeta());
-                raf.writeInt(casillaMeta.length);
-                raf.write(casillaMeta);
-                //DISTANCIA FALTANTE
-                raf.writeInt(robot.pesoDelUltimoPaso());
-                // LA FECHA
-                byte[] fecha = Convert.toBytes(robot.getGestorTrayectoria().getFecha());
-                raf.writeInt(fecha.length);
-                raf.write(fecha);
-                raf.close();
-            }
-        } else
-            throw new IllegalStateException("No hay datos para guardar");
-
-    }*/
 
     //Metodo ok
     public void crearReporteTrayectoria(LinkedList<Robot> robots) throws IOException {

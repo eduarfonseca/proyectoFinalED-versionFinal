@@ -4,6 +4,7 @@ import Modelos.GestorReportes
 import Modelos.Heuristica
 import Modelos.Reportes
 import Modelos.Robot
+import Modelos.Trayectoria
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +25,10 @@ class ReportesViewModel: ViewModel() {
     }
 
     fun addRobot(robot: Robot) {
-        (robot.meta.weight as Heuristica).modificarDistancia(0)
+//        (robot.meta.weight as Heuristica).modificarDistancia(0)
         _state.value.listaRobots.addLast(robot)
+
+        println("El peso de la meta del robot es: " + (robot.gestorTrayectoria.trayectoria.last as Trayectoria).distancia)
     }
 
 }
