@@ -117,38 +117,41 @@ public class GestorReportes {
 
     }
 
-
     public void crearReporteTrayectoria(LinkedList<Robot> robots) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(reporte1, "rw");
-        raf.seek(raf.length());
+        if (robots.isEmpty()) {
+            RandomAccessFile raf = new RandomAccessFile(reporte1, "rw");
+            raf.seek(raf.length());
 
-        Iterator<Robot> it = robots.iterator();
+            Iterator<Robot> it = robots.iterator();
 
-        while (it.hasNext()) {
-            Robot robot = it.next();
-            int sizeTrayectoria = robot.getGestorTrayectoria().getTrayectoria().size();
-            raf.write(sizeTrayectoria);
+            while (it.hasNext()) {
+                Robot robot = it.next();
+                int sizeTrayectoria = robot.getGestorTrayectoria().getTrayectoria().size();
+                raf.write(sizeTrayectoria);
 
-            Iterator<Trayectoria> itRecorrido = robot.getGestorTrayectoria().getTrayectoria().iterator();
+                Iterator<Trayectoria> itRecorrido = robot.getGestorTrayectoria().getTrayectoria().iterator();
 
-            while (itRecorrido.hasNext()) {
-                Trayectoria trayectoria = itRecorrido.next();
-                String dir = trayectoria.getDireccion();
-                byte[] arrayDir = Convert.toBytes(dir);
-                raf.write(arrayDir.length);
-                raf.write(arrayDir);
+                while (itRecorrido.hasNext()) {
+                    Trayectoria trayectoria = itRecorrido.next();
+                    String dir = trayectoria.getDireccion();
+                    byte[] arrayDir = Convert.toBytes(dir);
+                    raf.write(arrayDir.length);
+                    raf.write(arrayDir);
+                }
+
+                Casilla salida = (Casilla) robot.getGestorTrayectoria().getTrayectoria().getFirst().getCasilla().getInfo();
+                Casilla meta = robot.obtenerMeta();
+                byte[] arraySalida = Convert.toBytes(salida);
+                byte[] arrayMeta = Convert.toBytes(meta);
+                raf.write(arraySalida.length);
+                raf.write(arraySalida);
+                raf.write(arrayMeta.length);
+                raf.write(arrayMeta);
             }
 
-            Casilla salida = (Casilla) robot.getGestorTrayectoria().getTrayectoria().getFirst().getCasilla().getInfo();
-            Casilla meta = robot.obtenerMeta();
-            byte[] arraySalida = Convert.toBytes(salida);
-            byte[] arrayMeta = Convert.toBytes(meta);
-            raf.write(arraySalida.length);
-            raf.write(arraySalida);
-            raf.write(arrayMeta.length);
-            raf.write(arrayMeta);
+            raf.close();
+        } else {
+            throw new IllegalStateException("No hay datos para guardar");
         }
-
-        raf.close();
     }
 }

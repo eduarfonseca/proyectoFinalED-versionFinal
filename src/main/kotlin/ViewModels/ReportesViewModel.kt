@@ -15,7 +15,7 @@ class ReportesViewModel: ViewModel() {
 
     init {
         val listRobots = LinkedList<Robot>()
-        val gestReportes = GestorReportes()
+        val gestReportes = GestorReportes.getGestorReportes()
         _state.value = _state.value.copy(
             listaRobots = listRobots,
             gestorReportes = gestReportes
@@ -25,4 +25,6 @@ class ReportesViewModel: ViewModel() {
     fun addRobot(robot: Robot) {
         _state.value.listaRobots.addLast(robot)
     }
+
+
 }

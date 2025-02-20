@@ -138,9 +138,8 @@ public class Tablero {
         }
         return casillas;
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+    // Metodos para la vista
     public Tablero copy() {
         Tablero copia = new Tablero(this.filas, this.columnas);
         copia.grafo.getVerticesList().clear();
