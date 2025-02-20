@@ -1,6 +1,11 @@
 package Modelos;
 
-public class Casilla {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Casilla implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 2906642554793891381L;
     private final int x;
     private final int y;
     private boolean activa;

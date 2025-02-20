@@ -5,11 +5,14 @@ import Vistas.Componentes.MyButtonWithTooltip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -36,6 +39,11 @@ fun ReporteScreen(reportesViewModel: ReportesViewModel = viewModel()) {
             textoAlternativo = "Reporte en un fichero “.csv” ordenado por la distancia que faltó para llegar a la meta de todas las simulaciones que no llegaron, poniendo casillas de entrada y salida, distancia y fecha en que se realizó.\n",
             onClick = {state.gestorReportes.registrarMetasNoAlcanzadas(state.listaRobots)}
         )
+//        val size = state.listaRobots.size
+//        Text(text = "$size simulaciones")
+//        for (i in 0 until size) {
+//            Text(text = state.listaRobots[i].obtenerMeta().toString(), modifier = Modifier.padding(8.dp))
+//        }
     }
 
 }

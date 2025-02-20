@@ -118,7 +118,7 @@ public class GestorReportes {
     }
 
     public void crearReporteTrayectoria(LinkedList<Robot> robots) throws IOException {
-        if (robots.isEmpty()) {
+        if (!robots.isEmpty()) {
             RandomAccessFile raf = new RandomAccessFile(reporte1, "rw");
             raf.seek(raf.length());
 
