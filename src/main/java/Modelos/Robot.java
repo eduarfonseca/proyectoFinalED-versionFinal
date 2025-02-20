@@ -115,8 +115,9 @@ public class Robot implements Comparable<Robot> {
         for(int i = 0 ; i < gestorTrayectoria.getTrayectoria().size() ; i++){
             Trayectoria t = gestorTrayectoria.getTrayectoria().get(i);
             Casilla c = (Casilla)t.getCasilla().getInfo();
+            int p = ((Heuristica)t.getCasilla().getWeight()).getDistancia();
             String dir = t.getDireccion();
-            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  Direccion: " + dir);
+            System.out.println("fila: " + c.getX() + "  columna: " + c.getY() + "  activo: " + c.isActiva() + "  Direccion: " + dir + "peso " + p);
         }
 
    }

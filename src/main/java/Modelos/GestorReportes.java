@@ -48,6 +48,7 @@ public class GestorReportes {
         LinkedList<Robot> metas = new LinkedList<>();
         for (Robot robot : robots) {
             int distancia = robot.pesoDelUltimoPaso();
+            System.out.println(distancia);
             if (distancia == 0) {
                 metas.add(robot);
             }
@@ -90,8 +91,9 @@ public class GestorReportes {
     public LinkedList<Robot> metasNoAlcanzadas(LinkedList<Robot> robots) {
         LinkedList<Robot> metasNoAlcanzadas = new LinkedList<>();
         for (Robot robot : robots) {
-            int cantPasos = robot.getGestorTrayectoria().getTrayectoria().size();
-            if (!robot.obtenerMeta().equals(robot.getGestorTrayectoria().getTrayectoria().get(cantPasos - 1))) {
+            int distancia = robot.pesoDelUltimoPaso();
+            System.out.println(distancia);
+            if (distancia != 0) {
                 metasNoAlcanzadas.add(robot);
             }
         }
