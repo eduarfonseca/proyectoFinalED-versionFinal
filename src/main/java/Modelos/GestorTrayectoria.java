@@ -2,6 +2,7 @@ package Modelos;
 
 import kotlin.Pair;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,9 +10,11 @@ import java.util.List;
 
 public class GestorTrayectoria {
     private final LinkedList<Trayectoria> trayectoria;
+    private final LocalDateTime fecha;
 
     public GestorTrayectoria() {
         this.trayectoria = new LinkedList<>();
+        fecha = LocalDateTime.now();
     }
 
     public void agregarTrayectoria(Trayectoria t) {

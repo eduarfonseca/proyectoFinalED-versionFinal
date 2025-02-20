@@ -22,8 +22,6 @@ fun main() = application {
         size = DpSize(900.dp, 700.dp)
     )
 
-//    prueba()
-
     Window(
         onCloseRequest = ::exitApplication,
         state = windowState,
