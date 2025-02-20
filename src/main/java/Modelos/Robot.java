@@ -2,10 +2,12 @@ package Modelos;
 
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import cu.edu.cujae.ceis.graph.vertex.WeightedVertex;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class Robot {
+public class Robot implements Comparable<Robot> {
+
     private WeightedVertex posicionActual;
     private final Tablero tablero;
     private WeightedVertex meta;
@@ -44,6 +46,15 @@ public class Robot {
             this.meta = meta;
         else throw new IllegalArgumentException("La meta debe ser activa");
     }
+
+    @Override
+    public int compareTo(@NotNull Robot o) {
+        return Integer.compare(
+                this.gestorTrayectoria.getTrayectoria().size(),
+                o.gestorTrayectoria.getTrayectoria().size()
+        );
+    }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
    public int calcularMaxPasos(){
         return (tablero.getFilas() * tablero.getColumnas()) / 2;
