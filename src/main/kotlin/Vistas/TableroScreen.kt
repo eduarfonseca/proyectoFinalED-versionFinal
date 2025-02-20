@@ -283,3 +283,4 @@ fun crearCasillaSeleccionada(fila: Int, columnas: Int, columna: Int): CasillaSel
         coordenadas = Pair(fila, columna)
     )
 }
+
