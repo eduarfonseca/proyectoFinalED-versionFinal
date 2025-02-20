@@ -9,7 +9,7 @@ public class Heuristica {
 
     public int getDistancia() {return distancia;}
 
-    public void setDistancia(int distancia) {
+    public void modificarDistancia(int distancia) {
         this.distancia = distancia;
     }
 }

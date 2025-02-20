@@ -1,6 +1,7 @@
 package ViewModels
 
 import Modelos.GestorReportes
+import Modelos.Heuristica
 import Modelos.Reportes
 import Modelos.Robot
 import androidx.lifecycle.ViewModel
@@ -23,8 +24,8 @@ class ReportesViewModel: ViewModel() {
     }
 
     fun addRobot(robot: Robot) {
+        (robot.meta.weight as Heuristica).modificarDistancia(0)
         _state.value.listaRobots.addLast(robot)
     }
-
 
 }

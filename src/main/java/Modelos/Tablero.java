@@ -50,7 +50,7 @@ public class Tablero {
             WeightedVertex vertex = (WeightedVertex) iter.next();
             Casilla c = (Casilla) vertex.getInfo();
             int distancia = (c.equals(meta)) ? 0 : distanciaManhattan(c, meta);
-            ((Heuristica)vertex.getWeight()).setDistancia(distancia);
+            ((Heuristica)vertex.getWeight()).modificarDistancia(distancia);
         }
         desactivarCasillasAleatoriamente(porcentajeInactivas);
 

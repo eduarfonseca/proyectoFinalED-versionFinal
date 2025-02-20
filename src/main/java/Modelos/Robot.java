@@ -13,6 +13,10 @@ public class Robot implements Comparable<Robot> {
     private WeightedVertex meta;
     private final GestorTrayectoria gestorTrayectoria;
 
+    public WeightedVertex getMeta() {
+        return meta;
+    }
+
     public GestorTrayectoria getGestorTrayectoria() {return gestorTrayectoria;}
 
     public Robot(Tablero tablero, WeightedVertex meta, WeightedVertex posicionActual) {
@@ -62,7 +66,7 @@ public class Robot implements Comparable<Robot> {
 
    public int pesoDelUltimoPaso (){
        int pos = this.gestorTrayectoria.getTrayectoria().size();
-       WeightedVertex casilla = this.gestorTrayectoria.getTrayectoria().get(pos - 1).getCasilla();
+       WeightedVertex casilla = this.gestorTrayectoria.getTrayectoria().getLast().getCasilla();
        int peso = ((Heuristica)casilla.getWeight()).getDistancia();
        return peso;
    }

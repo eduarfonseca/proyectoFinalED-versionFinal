@@ -53,16 +53,20 @@ public class GestorReportes {
                 metas.add(robot);
             }
         }
-        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno antes de ordenar -> " + metas.size());
+//        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno antes de ordenar -> " + metas.size());
         metas.sort(Comparator.comparingInt(r -> r.getGestorTrayectoria().getTrayectoria().size()));
-        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno despues de ordenar -> " + metas.size());
+//        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno despues de ordenar -> " + metas.size());
         return metas;
     }
 
     public void registrarMetasAlcanzadas(LinkedList<Robot> robots) throws IOException {
-        System.out.println("la lista de robots al llamar a la funcion tiene tamanno -> " + robots.size());
+        int size = robots.size();
+        for (int i = 0; i < size; i++) {
+            System.out.println("La peso del robot: " + ((Heuristica) robots.get(i).getMeta().getWeight()).getDistancia());
+        }
+//        System.out.println("la lista de robots al llamar a la funcion tiene tamanno -> " + robots.size());
         LinkedList<Robot> listos = metasAlcanzadas(robots);
-        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno -> " + listos.size());
+//        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno -> " + listos.size());
         Iterator<Robot> it = listos.iterator();
         RandomAccessFile raf = new RandomAccessFile(reporte2, "rw");
         if (!listos.isEmpty()) {
@@ -167,4 +171,9 @@ public class GestorReportes {
             throw new IllegalStateException("No hay datos para guardar");
         }
     }
+
+//    public LinkedList<Robot> refactorizarLista(LinkedList<Robot> robots){
+//        LinkedList<Robot> lista = new LinkedList<>();
+//
+//    }
 }
