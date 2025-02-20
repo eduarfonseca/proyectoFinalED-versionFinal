@@ -73,7 +73,10 @@ public class GestorReportes {
                 raf.write(casillaMeta);
                 //Cantidad de Pasos
                 raf.writeInt(robot.getGestorTrayectoria().getTrayectoria().size());
-                // FALTA LA FECHA
+                // LA FECHA
+                byte[] fecha = Convert.toBytes(robot.getGestorTrayectoria().getFecha());
+                raf.writeInt(fecha.length);
+                raf.write(fecha);
                 raf.close();
             }
         } else
@@ -109,7 +112,10 @@ public class GestorReportes {
                 raf.write(casillaMeta);
                 //DISTANCIA FALTANTE
                 raf.writeInt(robot.pesoDelUltimoPaso());
-                // FALTA LA FECHA
+                // LA FECHA
+                byte[] fecha = Convert.toBytes(robot.getGestorTrayectoria().getFecha());
+                raf.writeInt(fecha.length);
+                raf.write(fecha);
                 raf.close();
             }
         } else
