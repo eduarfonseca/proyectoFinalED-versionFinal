@@ -16,6 +16,9 @@ public class GestorTrayectoria {
         this.trayectoria = new LinkedList<>();
         fecha = LocalDateTime.now();
     }
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
 
     public void agregarTrayectoria(Trayectoria t) {
         trayectoria.addLast(t);
