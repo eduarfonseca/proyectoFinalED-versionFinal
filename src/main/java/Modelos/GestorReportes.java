@@ -123,6 +123,7 @@ public class GestorReportes {
 
     }
 
+    //Metodo ok
     public void crearReporteTrayectoria(LinkedList<Robot> robots) throws IOException {
         if (!robots.isEmpty()) {
             RandomAccessFile raf = new RandomAccessFile(reporte1, "rw");
