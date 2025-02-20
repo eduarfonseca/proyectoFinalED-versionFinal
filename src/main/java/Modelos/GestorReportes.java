@@ -68,7 +68,7 @@ public class GestorReportes {
             while (it.hasNext()) {
                 Robot robot = it.next();
                 // CASILLA DE INICIO
-                byte[] casillaInicio = Convert.toBytes((Casilla)robot.obtenerPosicionActual().getInfo());
+                byte[] casillaInicio = Convert.toBytes(robot.obtenerPosicionActual().getInfo());
                 raf.writeInt(casillaInicio.length);
                 raf.write(casillaInicio);
                 //CASILLA META
