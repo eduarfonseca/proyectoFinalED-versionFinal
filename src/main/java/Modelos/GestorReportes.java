@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
+import com.opencsv.CSVWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class GestorReportes {
     private static GestorReportes gestorReportes;
@@ -43,6 +47,66 @@ public class GestorReportes {
     public File getReporte3() {
         return this.reporte3;
     }
+    //////////////////////////////////////////////////////////////////////////
+    //Probando escribir con metodos csv
+    public void csv1(LinkedList<Robot> robots) throws IOException {
+       LinkedList<Robot> listos = metasAlcanzadas(robots);
+
+        if (listos.isEmpty()) {
+            throw new IllegalStateException("No hay datos para guardar");
+        }
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel2))) {
+            // Escribir la cabecera
+            String[] encabezado = {"Casilla Inicio", "Casilla Meta", "Cantidad de Pasos", "Fecha"};
+            writer.writeNext(encabezado);
+
+            // Iterar y escribir datos de los robots
+            for (Robot robot : listos) {
+                String casillaInicio = robot.obtenerPosicionActual().getInfo().toString();
+                String casillaMeta = robot.obtenerMeta().toString();
+                String cantPasos = String.valueOf(robot.getGestorTrayectoria().getTrayectoria().size());
+                String fecha = robot.getGestorTrayectoria().getFecha().toString();
+
+                String[] datos = {casillaInicio, casillaMeta, cantPasos, fecha};
+                writer.writeNext(datos);
+            }
+
+            System.out.println("CSV generado con éxito en: " + this.excel2);
+        } catch (IOException e) {
+            throw new IOException("Error al escribir el archivo CSV", e);
+        }
+    }
+
+    public void csv2(LinkedList<Robot> robots) throws IOException {
+        LinkedList<Robot> listos = metasNoAlcanzadas(robots);
+
+        if (listos.isEmpty()) {
+            throw new IllegalStateException("No hay datos para guardar");
+        }
+
+        try (CSVWriter writer = new CSVWriter(new FileWriter(this.excel3))) {
+            // Escribir la cabecera
+            String[] encabezado = {"Casilla Inicio", "Casilla Meta", "Distancia Faltante", "Fecha"};
+            writer.writeNext(encabezado);
+
+            // Iterar y escribir datos de los robots
+            for (Robot robot : listos) {
+                String casillaInicio = robot.obtenerPosicionActual().getInfo().toString();
+                String casillaMeta = robot.obtenerMeta().toString();
+                String distancia = String.valueOf(robot.pesoDelUltimoPaso());
+                String fecha = robot.getGestorTrayectoria().getFecha().toString();
+
+                String[] datos = {casillaInicio, casillaMeta,distancia, fecha};
+                writer.writeNext(datos);
+            }
+
+            System.out.println("CSV generado con éxito en: " + this.excel3);
+        } catch (IOException e) {
+            throw new IOException("Error al escribir el archivo CSV", e);
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
 
     public LinkedList<Robot> metasAlcanzadas(LinkedList<Robot> robots) {
         LinkedList<Robot> metas = new LinkedList<>();
@@ -59,7 +123,7 @@ public class GestorReportes {
         return metas;
     }
 
-    public void registrarMetasAlcanzadas(LinkedList<Robot> robots) throws IOException {
+    /*public void registrarMetasAlcanzadas(LinkedList<Robot> robots) throws IOException {
         System.out.println("la lista de robots al llamar a la funcion tiene tamanno -> " + robots.size());
         LinkedList<Robot> listos = metasAlcanzadas(robots);
         System.out.println("la lista de listos en metas alcanzadas tiene este tamanno -> " + listos.size());
@@ -86,7 +150,7 @@ public class GestorReportes {
             }
         } else
             throw new IllegalStateException("No hay datos para guardar");
-    }
+    }*/
 
     public LinkedList<Robot> metasNoAlcanzadas(LinkedList<Robot> robots) {
         LinkedList<Robot> metasNoAlcanzadas = new LinkedList<>();
@@ -101,7 +165,7 @@ public class GestorReportes {
         return metasNoAlcanzadas;
     }
 
-    public void registrarMetasNoAlcanzadas(LinkedList<Robot> robots) throws IOException {
+    /*public void registrarMetasNoAlcanzadas(LinkedList<Robot> robots) throws IOException {
         LinkedList<Robot> listos = metasNoAlcanzadas(robots);
         Iterator<Robot> it = listos.iterator();
         RandomAccessFile raf = new RandomAccessFile(reporte3, "rw");
@@ -127,7 +191,7 @@ public class GestorReportes {
         } else
             throw new IllegalStateException("No hay datos para guardar");
 
-    }
+    }*/
 
     //Metodo ok
     public void crearReporteTrayectoria(LinkedList<Robot> robots) throws IOException {
