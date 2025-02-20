@@ -47,24 +47,28 @@ public class GestorReportes {
     public LinkedList<Robot> metasAlcanzadas(LinkedList<Robot> robots) {
         LinkedList<Robot> metas = new LinkedList<>();
         for (Robot robot : robots) {
-            int cantPasos = robot.getGestorTrayectoria().getTrayectoria().size();
-            if (robot.obtenerMeta().equals(robot.getGestorTrayectoria().getTrayectoria().get(cantPasos - 1))) {
+            int distancia = robot.pesoDelUltimoPaso();
+            if (distancia == 0) {
                 metas.add(robot);
             }
         }
+        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno antes de ordenar -> " + metas.size());
         metas.sort(Comparator.comparingInt(r -> r.getGestorTrayectoria().getTrayectoria().size()));
+        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno despues de ordenar -> " + metas.size());
         return metas;
     }
 
     public void registrarMetasAlcanzadas(LinkedList<Robot> robots) throws IOException {
+        System.out.println("la lista de robots al llamar a la funcion tiene tamanno -> " + robots.size());
         LinkedList<Robot> listos = metasAlcanzadas(robots);
+        System.out.println("la lista de listos en metas alcanzadas tiene este tamanno -> " + listos.size());
         Iterator<Robot> it = listos.iterator();
         RandomAccessFile raf = new RandomAccessFile(reporte2, "rw");
         if (!listos.isEmpty()) {
             while (it.hasNext()) {
                 Robot robot = it.next();
                 // CASILLA DE INICIO
-                byte[] casillaInicio = Convert.toBytes(robot.obtenerPosicionActual());
+                byte[] casillaInicio = Convert.toBytes((Casilla)robot.obtenerPosicionActual().getInfo());
                 raf.writeInt(casillaInicio.length);
                 raf.write(casillaInicio);
                 //CASILLA META
@@ -103,7 +107,7 @@ public class GestorReportes {
             while (it.hasNext()) {
                 Robot robot = it.next();
                 // CASILLA DE INICIO
-                byte[] casillaInicio = Convert.toBytes(robot.obtenerPosicionActual());
+                byte[] casillaInicio = Convert.toBytes((Casilla)robot.obtenerPosicionActual().getInfo());
                 raf.writeInt(casillaInicio.length);
                 raf.write(casillaInicio);
                 //CASILLA META
