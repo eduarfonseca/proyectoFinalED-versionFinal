@@ -26,6 +26,7 @@ dependencies {
     implementation(files("libs/LinkedGraph_1.0.jar"))
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
+    implementation("com.opencsv:opencsv:5.7.1")
 }
 
 compose.desktop {

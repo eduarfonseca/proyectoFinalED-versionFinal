@@ -34,7 +34,7 @@ public class Casilla implements Serializable {
 
     @Override
     public String toString() {
-        return "Casilla(" + x + ", " + y + ", " + (activa ? "activa" : "inactiva") + ")";
+        return "(" + x + " ; " + y + ")";
     }
 
     @Override

@@ -32,12 +32,12 @@ fun ReporteScreen(reportesViewModel: ReportesViewModel = viewModel()) {
         MyButtonWithTooltip(
             texto = "Reporte 2",
             textoAlternativo = "Reporte en un fichero “.csv” ordenado por la cantidad de pasos todas las simulaciones que llegaron a la meta, poniendo casillas de entrada y salida, cantidad de pasos y fecha en que se realizó.\n",
-            onClick = {state.gestorReportes.registrarMetasAlcanzadas(state.listaRobots)}
+            onClick = {state.gestorReportes.csv1(state.listaRobots)}
         )
         MyButtonWithTooltip(
             texto = "Reporte 3",
             textoAlternativo = "Reporte en un fichero “.csv” ordenado por la distancia que faltó para llegar a la meta de todas las simulaciones que no llegaron, poniendo casillas de entrada y salida, distancia y fecha en que se realizó.\n",
-            onClick = {state.gestorReportes.registrarMetasNoAlcanzadas(state.listaRobots)}
+            onClick = {state.gestorReportes.csv2(state.listaRobots)}
         )
 //        val size = state.listaRobots.size
 //        Text(text = "$size simulaciones")
